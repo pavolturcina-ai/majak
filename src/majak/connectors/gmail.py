@@ -1,19 +1,25 @@
 """Gmail connector.
 
-Delta-sync uses Gmail's historyId as the cursor when available, else a date
-window. Reuse the CEO's existing MCP Gmail connector where available; this
-direct-API path is the fallback. Returns empty (no-op) when unconfigured so the
-scheduler runs cleanly without credentials.
+Delta-sync uses the newest message's internalDate as the cursor; overlap is
+harmless because ingestion dedupes on (connector, external_id). Reads full RFC822
+via format=raw so the existing `.eml` normalizer handles parsing.
 """
 
 from __future__ import annotations
 
+import base64
 import logging
+from datetime import UTC, datetime
+
+import httpx
 
 from majak.config import settings
+from majak.connectors._google import access_token
 from majak.models.schemas import RawInput
 
 logger = logging.getLogger(__name__)
+
+_BASE = "https://gmail.googleapis.com/gmail/v1/users/me"
 
 
 class GmailConnector:
@@ -25,17 +31,51 @@ class GmailConnector:
 
     async def fetch_since(self, cursor: str | None) -> tuple[list[RawInput], str | None]:
         if not self.configured:
-            logger.info("gmail connector not configured; skipping")
+            logger.info("gmail not configured; skipping")
             return [], cursor
 
-        # Real implementation outline (kept as a clean seam):
-        #   1. Exchange refresh token for an access token.
-        #   2. users.history.list(startHistoryId=cursor) OR
-        #      users.messages.list(q="newer_than:1d -in:chats") on first run.
-        #   3. For each message: users.messages.get(format='raw') -> RawInput(
-        #        kind='email', connector='gmail', external_id=message_id,
-        #        occurred_at=internalDate, file_bytes=raw_rfc822, mime='message/rfc822').
-        #   4. new cursor = latest historyId.
-        raise NotImplementedError(
-            "Gmail direct-API fetch not wired; provide OAuth creds or route via MCP."
+        token = await access_token(
+            settings.gmail_client_id, settings.gmail_client_secret, settings.gmail_refresh_token
         )
+        headers = {"Authorization": f"Bearer {token}"}
+        # cursor = epoch seconds of the newest message seen; first run = last 1 day.
+        query = f"after:{cursor}" if cursor else "newer_than:1d"
+        query += " -in:chats -in:spam -in:trash"
+
+        raws: list[RawInput] = []
+        newest = int(cursor) if cursor else 0
+        async with httpx.AsyncClient(timeout=30) as client:
+            listing = await client.get(
+                f"{_BASE}/messages",
+                params={"q": query, "maxResults": "50"},
+                headers=headers,
+            )
+            listing.raise_for_status()
+            for meta in listing.json().get("messages", []):
+                mid = meta["id"]
+                msg = await client.get(
+                    f"{_BASE}/messages/{mid}", params={"format": "raw"}, headers=headers
+                )
+                msg.raise_for_status()
+                data = msg.json()
+                raw_bytes = base64.urlsafe_b64decode(data["raw"])
+                internal_ms = int(data.get("internalDate", "0"))
+                occurred = datetime.fromtimestamp(internal_ms / 1000, tz=UTC)
+                newest = max(newest, internal_ms // 1000)
+                raws.append(
+                    RawInput(
+                        kind="email",
+                        connector="gmail",
+                        external_id=mid,
+                        occurred_at=occurred,
+                        file_bytes=raw_bytes,
+                        file_name=f"{mid}.eml",
+                        mime="message/rfc822",
+                        url=f"https://mail.google.com/mail/u/0/#all/{mid}",
+                        meta={"thread_id": data.get("threadId")},
+                    )
+                )
+
+        new_cursor = str(newest) if newest else cursor
+        logger.info("gmail: %d messages", len(raws))
+        return raws, new_cursor
