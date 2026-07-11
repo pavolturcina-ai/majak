@@ -23,7 +23,7 @@ from majak.day.assemble import assemble_day, get_day_view
 from majak.day.lifecycle import carry_unfinished, close_day, ensure_day, next_day, open_day
 from majak.ingest.pipeline import ingest
 from majak.models.schemas import RawInput
-from majak.models.tables import Item, ItemSource, Source, SyncState
+from majak.models.tables import Item, ItemSource, JobRun, Source, SyncState
 from majak.scheduler.notify import notify
 from majak.util.time import today_local
 
@@ -50,6 +50,30 @@ async def _unlock(session: AsyncSession, key: int) -> None:
         logger.warning("advisory unlock %s failed: %s", key, exc)
 
 
+async def _start_run(session: AsyncSession, job: str, day: date) -> object:
+    run = JobRun(job=job, on_day=day, status="running")
+    session.add(run)
+    await session.flush()
+    run_id = run.id
+    await session.commit()
+    return run_id
+
+
+async def _finish_run(session: AsyncSession, run_id, status: str, stats: dict, error: str | None) -> None:
+    with contextlib.suppress(Exception):
+        await session.rollback()  # clear any failed txn (the run row is already committed)
+    try:
+        run = await session.get(JobRun, run_id)
+        if run is not None:
+            run.status = status
+            run.stats = stats or {}
+            run.error = error
+            run.finished_at = today_local_dt()
+            await session.commit()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("finish_run failed: %s", exc)
+
+
 async def close_and_open_tomorrow(session: AsyncSession, *, on: date | None = None) -> dict:
     """18:00 — close today, open tomorrow, carry forward, pull calendar."""
     today = on or today_local()
@@ -58,6 +82,8 @@ async def close_and_open_tomorrow(session: AsyncSession, *, on: date | None = No
     if not await _try_lock(session, _LOCK_CLOSE):
         logger.warning("close_and_open: another run in progress; skipping")
         return {"skipped": "another run in progress", "day": today.isoformat()}
+    run_id = await _start_run(session, "close-and-open", today)
+    status, error, stats = "ok", None, {}
     try:
         await assemble_day(session, today)
         rollup = await _rollup_for_day(session, today)
@@ -80,9 +106,14 @@ async def close_and_open_tomorrow(session: AsyncSession, *, on: date | None = No
             "calendar_sources": calendar_sources,
             "rollup": rollup,
         }
+        stats = result
         logger.info("close_and_open_tomorrow: %s", result)
         return result
+    except Exception as exc:
+        status, error = "failed", str(exc)
+        raise
     finally:
+        await _finish_run(session, run_id, status, stats, error)
         await _unlock(session, _LOCK_CLOSE)
 
 
@@ -97,12 +128,14 @@ async def fill_overnight(session: AsyncSession, *, on: date | None = None) -> di
     if not await _try_lock(session, _LOCK_FILL):
         logger.warning("fill_overnight: another run in progress; skipping")
         return {"skipped": "another run in progress", "day": today.isoformat()}
+    run_id = await _start_run(session, "fill-overnight", today)
+    run_status, run_error = "ok", None
+    stats: dict[str, dict] = {}
     try:
         await open_day(session, today)
         await session.commit()  # release the day row immediately
 
         connectors = load_default_connectors()
-        stats: dict[str, dict] = {}
 
         for name, conn in connectors.items():
             state = await _get_sync_state(session, name)
@@ -144,12 +177,18 @@ async def fill_overnight(session: AsyncSession, *, on: date | None = None) -> di
             subject=f"MAJÁK — brief pripravený ({today.isoformat()})",
             body=(view.pulse if view else "Deň je pripravený."),
         )
+        result = {"day": today.isoformat(), "connectors": stats}
+        logger.info("fill_overnight: %s", result)
+        return result
+    except Exception as exc:
+        run_status, run_error = "failed", str(exc)
+        raise
     finally:
+        await _finish_run(
+            session, run_id, run_status,
+            {"day": today.isoformat(), "connectors": stats}, run_error,
+        )
         await _unlock(session, _LOCK_FILL)
-
-    result = {"day": today.isoformat(), "connectors": stats}
-    logger.info("fill_overnight: %s", result)
-    return result
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────

@@ -241,6 +241,19 @@ class ItemEmbedding(Base):
     )
 
 
+class JobRun(Base):
+    __tablename__ = "job_runs"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    job: Mapped[str] = mapped_column(Text)
+    on_day: Mapped[date | None] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(String, default="running")
+    stats: Mapped[dict] = mapped_column(JSONB, default=dict)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
 class ExtractionHint(Base):
     __tablename__ = "extraction_hints"
 

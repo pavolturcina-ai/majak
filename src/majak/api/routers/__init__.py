@@ -5,6 +5,7 @@ from majak.api.routers import (
     people,
     review,
     rollup,
+    runs,
     scheduler,
     sources,
 )
@@ -18,6 +19,7 @@ routers = [
     review.router,
     rollup.router,
     scheduler.router,
+    runs.router,
 ]
 
 __all__ = ["routers"]

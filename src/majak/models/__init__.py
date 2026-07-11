@@ -9,6 +9,7 @@ from majak.models.tables import (
     ItemEvent,
     ItemPerson,
     ItemSource,
+    JobRun,
     Person,
     PersonAlias,
     ReviewQueue,
@@ -36,4 +37,5 @@ __all__ = [
     "SourceChunk",
     "ItemEmbedding",
     "ExtractionHint",
+    "JobRun",
 ]
