@@ -14,6 +14,7 @@ import uuid
 from datetime import date, timedelta
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from majak.models.tables import Day, Item, ItemEvent, ItemPerson, ItemSource
@@ -21,8 +22,13 @@ from majak.util.time import now_local
 
 
 async def ensure_day(session: AsyncSession, day: date, *, status: str = "draft") -> Day:
+    """Idempotent, concurrency-safe day upsert (no racy select-then-insert)."""
+    stmt = pg_insert(Day).values(date=day, status=status).on_conflict_do_nothing(
+        index_elements=["date"]
+    )
+    await session.execute(stmt)
     row = await session.get(Day, day)
-    if row is None:
+    if row is None:  # extremely unlikely; fall back to an ORM insert
         row = Day(date=day, status=status)
         session.add(row)
         await session.flush()
