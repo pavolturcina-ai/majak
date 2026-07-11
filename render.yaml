@@ -1,0 +1,83 @@
+# Render Blueprint for MAJÁK — one API web service + two daily cron jobs.
+# Deploy: Render Dashboard → New → Blueprint → connect this repo → set the
+# secret env vars (marked sync:false) → Apply.
+#
+# Cron times are UTC. The values below are for Europe/Bratislava SUMMER (CEST,
+# UTC+2): 18:00 local = 16:00 UTC, 04:00 local = 02:00 UTC. In WINTER (CET,
+# UTC+1) change them to 17 and 3. See DEPLOY.md.
+
+envVarGroups:
+  - name: majak-secrets
+    envVars:
+      # ── Set these in the Render dashboard (never commit real values) ──
+      - key: DATABASE_URL          # postgresql+asyncpg://...supabase...:5432/postgres
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: CRON_SECRET           # shared bearer for /scheduler/* endpoints
+        sync: false
+      # ── Connectors (optional; no-op until set) ──
+      - key: GMAIL_CLIENT_ID
+        sync: false
+      - key: GMAIL_CLIENT_SECRET
+        sync: false
+      - key: GMAIL_REFRESH_TOKEN
+        sync: false
+      - key: SLACK_BOT_TOKEN
+        sync: false
+      - key: FATHOM_API_KEY
+        sync: false
+      - key: GCAL_CLIENT_ID
+        sync: false
+      - key: GCAL_CLIENT_SECRET
+        sync: false
+      - key: GCAL_REFRESH_TOKEN
+        sync: false
+      # ── Non-secret defaults ──
+      - key: CLAUDE_MODEL_EXTRACT
+        value: claude-sonnet-4-5
+      - key: CLAUDE_MODEL_SYNTH
+        value: claude-opus-4-1
+      - key: TZ
+        value: Europe/Bratislava
+      - key: NOTIFY_CHANNEL
+        value: log
+
+services:
+  # ── API (runs 24/7) ──
+  - type: web
+    name: majak-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /health
+    # Apply DB migrations before each deploy (idempotent).
+    preDeployCommand: python -m majak.migrate
+    envVars:
+      - fromGroup: majak-secrets
+
+  # ── 18:00 Europe/Bratislava — close today, open tomorrow, carry, calendar ──
+  - type: cron
+    name: majak-close-open
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    schedule: "0 16 * * *"
+    dockerCommand: python -m majak.scheduler.cli close-and-open
+    envVars:
+      - fromGroup: majak-secrets
+
+  # ── 04:00 Europe/Bratislava — pull overnight inputs, rebuild brief, notify ──
+  - type: cron
+    name: majak-fill-overnight
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    schedule: "0 2 * * *"
+    dockerCommand: python -m majak.scheduler.cli fill-overnight
+    envVars:
+      - fromGroup: majak-secrets
