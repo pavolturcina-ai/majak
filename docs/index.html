@@ -48,7 +48,7 @@
   .nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
   .nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:6px 11px;border-radius:8px}
   .nav a:hover{background:var(--signal-tint);color:var(--signal-deep)}
-  .nav a.cta{background:var(--signal);color:#fff}
+  .nav a.cta,.nav a.active{background:var(--signal);color:#fff}
   .nav a.cta:hover{background:var(--signal-deep);color:#fff}
 
   .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
@@ -137,12 +137,10 @@
   <div class="in">
     <a class="logo" href="#top"><span class="beacon" aria-hidden="true"></span><b>MAJÁK</b></a>
     <nav class="nav">
-      <a href="#prehlad">Prehľad</a>
-      <a href="#import">Fork → Import</a>
-      <a href="#architektura">Architektúra</a>
-      <a href="#vylepsovat">Kde vylepšovať</a>
-      <a href="./import.html" class="cta">Import →</a>
-      <a href="./report.html" class="cta">Report →</a>
+      <a href="./index.html" class="active" aria-current="page">Hub</a>
+      <a href="./report.html">Report</a>
+      <a href="./import.html">Import</a>
+      <a href="./zoznam.html">Zoznam</a>
     </nav>
   </div>
 </div>

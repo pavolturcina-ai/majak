@@ -235,6 +235,27 @@
 </head>
 <body>
 
+<div class="majak-xnav">
+  <a class="mx-logo" href="./index.html">◎ MAJÁK</a>
+  <nav>
+    <a href="./index.html">Hub</a>
+    <a href="./report.html" class="on">Report</a>
+    <a href="./import.html">Import</a>
+    <a href="./zoznam.html">Zoznam</a>
+  </nav>
+</div>
+<style>
+.majak-xnav{display:flex;align-items:center;gap:14px;padding:8px 20px;background:var(--card);
+  border-bottom:1px solid var(--line);font-family:"Inter",system-ui,sans-serif}
+.majak-xnav .mx-logo{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:.14em;
+  font-size:13px;color:var(--signal);text-decoration:none;white-space:nowrap}
+.majak-xnav nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.majak-xnav nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:5px 11px;border-radius:8px}
+.majak-xnav nav a:hover{background:var(--signal-tint);color:var(--signal)}
+.majak-xnav nav a.on{background:var(--signal);color:#fff}
+@media print{.majak-xnav{display:none!important}}
+</style>
+
 <div class="toolbar">
   <div class="inner">
     <span class="brand">CEO vyhodnotenie</span>
@@ -334,14 +355,9 @@ function allOwners(){
 function visible(it){return activeOwner==="Všetci" || (it.own||[]).includes(activeOwner);}
 
 function renderFilter(){
-  const owners=allOwners();
-  const order=["Pavol","Janči","Ondrej","Jozef","Katka","Miroslava","Anton","Saleh","Maz"];
-  owners.sort((a,b)=>{let i=order.indexOf(a),j=order.indexOf(b);return (i<0?99:i)-(j<0?99:j);});
-  const chips=["Všetci"].concat(owners).map(o=>`<button class="ochip ${activeOwner===o?'on':''}" onclick="setOwner('${o.replace(/'/g,"")}')">${esc(o)}</button>`).join("");
-  const lc=k=>{let n=0;state.sections.forEach(s=>s.items.forEach(it=>{if(it.list===k)n++;}));return n;};
-  const lchips=[["all","Všetko"],["uloha","Úlohy"],["napad","Nápady"],["poznamka","Poznámky"]]
-    .map(k=>`<button class="ochip ${activeKind===k[0]?'on':''}" onclick="setKind('${k[0]}')">${k[1]}${k[0]!=='all'?`<span class="n">${lc(k[0])}</span>`:''}</button>`).join("");
-  document.getElementById("filterbar").innerHTML=`<span class="flabel">Vlastník</span>${chips}<span class="fsep"></span><span class="flabel">Zoznam</span>${lchips}`;
+  // Owner + list ("Zoznam") filters were moved to the dedicated Zoznam page.
+  const fb=document.getElementById("filterbar");
+  if(fb){fb.innerHTML="";fb.style.display="none";}
 }
 function setOwner(o){activeOwner=o;renderFilter();render();}
 
