@@ -8,6 +8,7 @@ imports are lazy so unused formats don't add import cost.
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 
 from majak.llm.client import get_llm
@@ -30,7 +31,12 @@ class NormalizedInput:
 async def normalize(raw: RawInput) -> NormalizedInput:
     """Dispatch on the input shape and return clean text (+ optional structure)."""
     if raw.text is not None:
-        return NormalizedInput(text=clean_text(raw.text), title=raw.title)
+        cleaned = clean_text(raw.text)
+        segments: list[dict] = []
+        # ASR/Fathom transcripts arrive as plain text (timestamp / speaker / text).
+        if raw.kind in ("transcript", "fathom"):
+            segments = parse_asr_segments(raw.text)
+        return NormalizedInput(text=cleaned, title=raw.title, segments=segments)
 
     if raw.html is not None:
         return _from_html(raw.html, raw.title)
@@ -93,8 +99,6 @@ def _extract_transcript_segments(soup) -> list[dict]:
         return segments
 
     # Pattern B: heuristic on plain text lines like "Speaker Name  00:12  ...".
-    import re
-
     line_re = re.compile(r"^(?P<speaker>[A-ZÀ-ž][\w .'-]{1,40}?)\s+(?P<ts>\d{1,2}:\d{2}(?::\d{2})?)\s+(?P<text>.+)$")
     for line in soup.get_text(separator="\n").split("\n"):
         m = line_re.match(line.strip())
@@ -103,6 +107,55 @@ def _extract_transcript_segments(soup) -> list[dict]:
                 {"speaker": m.group("speaker").strip(), "ts": m.group("ts"), "text": m.group("text").strip()}
             )
     return segments
+
+
+_TS_LINE_RE = re.compile(r"^\d{1,2}:\d{2}(?::\d{2})?$")
+# A speaker line: a short name-like line, no sentence-ending punctuation.
+_SPEAKER_LINE_RE = re.compile(r"^[A-ZÀ-Ž][\w .'’-]{1,44}$")
+
+
+def parse_asr_segments(text: str) -> list[dict]:
+    """Parse the 'timestamp / speaker / text' layout common to ASR + Fathom exports.
+
+        00:00:00
+        Janči Hroncák
+        No dobre, ahojte...
+        00:00:25
+        Pavol Turčina
+        Zdá sa, že...
+
+    Returns [{speaker, ts, text}]; [] when the text isn't in this shape.
+    """
+    lines = [ln.strip() for ln in text.replace("\r\n", "\n").split("\n")]
+    segments: list[dict] = []
+    i = 0
+    n = len(lines)
+    while i < n:
+        line = lines[i]
+        if _TS_LINE_RE.match(line):
+            ts = line
+            # Next non-empty line should be the speaker.
+            j = i + 1
+            while j < n and not lines[j]:
+                j += 1
+            speaker = None
+            if j < n and _SPEAKER_LINE_RE.match(lines[j]) and not _TS_LINE_RE.match(lines[j]):
+                speaker = lines[j]
+                j += 1
+            # Collect text until the next timestamp line.
+            body: list[str] = []
+            while j < n and not _TS_LINE_RE.match(lines[j]):
+                if lines[j]:
+                    body.append(lines[j])
+                j += 1
+            body_text = re.sub(r"\s+", " ", " ".join(body)).strip()
+            if body_text:
+                segments.append({"speaker": speaker, "ts": ts, "text": body_text})
+            i = j
+        else:
+            i += 1
+    # Require a few segments before trusting the parse (avoids false positives).
+    return segments if len(segments) >= 3 else []
 
 
 def _format_segment(seg: dict) -> str:

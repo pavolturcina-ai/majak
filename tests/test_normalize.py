@@ -41,6 +41,40 @@ def test_html_without_transcript_returns_text_only():
     assert "len text" in norm.text
 
 
+def test_parse_asr_segments_timestamp_speaker_text_layout():
+    from majak.ingest.normalize import parse_asr_segments
+
+    text = (
+        "00:00:00\nJanči Hroncák\nNo dobre, ahojte, kde sme skončili?\n"
+        "00:00:25\nPavol Turčina\nZdá sa, že ten partner môže byť ten,\nkto má koncesiu.\n"
+        "00:01:10\nMiro Šinger\nSúhlasím, poďme na to.\n"
+    )
+    segs = parse_asr_segments(text)
+    assert len(segs) == 3
+    assert segs[0]["ts"] == "00:00:00"
+    assert segs[0]["speaker"] == "Janči Hroncák"
+    # Multi-line body is joined.
+    assert segs[1]["text"] == "Zdá sa, že ten partner môže byť ten, kto má koncesiu."
+    assert segs[2]["speaker"] == "Miro Šinger"
+
+
+def test_parse_asr_segments_rejects_non_transcript():
+    from majak.ingest.normalize import parse_asr_segments
+
+    assert parse_asr_segments("Toto je len bežná poznámka bez časových značiek.") == []
+
+
+@pytest.mark.asyncio
+async def test_normalize_transcript_text_populates_segments():
+    from majak.ingest.normalize import normalize
+    from majak.models.schemas import RawInput
+
+    text = "0:05\nPavol Turčina\nMusíme poslať faktúru.\n0:20\nJana\nDobre.\n0:40\nPavol\nĎakujem.\n"
+    norm = await normalize(RawInput(kind="transcript", text=text))
+    assert len(norm.segments) == 3
+    assert norm.segments[0]["speaker"] == "Pavol Turčina"
+
+
 @pytest.mark.asyncio
 async def test_normalize_text_passthrough():
     from majak.ingest.normalize import normalize

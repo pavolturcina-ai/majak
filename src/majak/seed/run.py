@@ -19,6 +19,7 @@ import asyncio
 import json
 import logging
 import mimetypes
+import re
 from datetime import date
 from pathlib import Path
 
@@ -57,6 +58,13 @@ def _guess_date(name: str) -> date | None:
     return None
 
 
+_TS_LINE = re.compile(r"^\s*\d{1,2}:\d{2}(?::\d{2})?\s*$", re.MULTILINE)
+
+
+def _looks_like_transcript(text: str) -> bool:
+    return len(_TS_LINE.findall(text)) >= 5
+
+
 def _raw_for(path: Path) -> RawInput | None:
     ext = path.suffix.lower()
     occurred_on = _guess_date(path.name)
@@ -72,13 +80,16 @@ def _raw_for(path: Path) -> RawInput | None:
             html=path.read_text(encoding="utf-8", errors="replace"),
         )
     if ext in _TEXT_EXT:
+        body = path.read_text(encoding="utf-8", errors="replace")
+        # A .txt with many timestamp lines is a transcript, not a note.
+        kind = "transcript" if _looks_like_transcript(body) else "text"
         return RawInput(
-            kind="text",
+            kind=kind,
             connector="seed",
             external_id=external_id,
             title=path.stem,
             occurred_on=occurred_on,
-            text=path.read_text(encoding="utf-8", errors="replace"),
+            text=body,
         )
     if ext in _IMAGE_EXT:
         return RawInput(
