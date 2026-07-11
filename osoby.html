@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAJÁK — Zoznam</title>
+<title>MAJÁK — Osoby</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -242,8 +242,8 @@
       <a href="./index.html">Hub</a>
       <a href="./report.html">Report</a>
       <a href="./import.html">Import</a>
-      <a href="./zoznam.html" class="active" aria-current="page">Zoznam</a>
-      <a href="./osoby.html">Osoby</a>
+      <a href="./zoznam.html">Zoznam</a>
+      <a href="./osoby.html" class="active" aria-current="page">Osoby</a>
     </nav>
   </div>
 </div>
@@ -265,7 +265,7 @@
 
 <div class="toolbar">
   <div class="inner">
-    <span class="brand">Zoznam · archív</span>
+    <span class="brand">Osoby · podľa ľudí</span>
     <span class="spacer"></span>
     <div class="seg" title="Zobraziť len aktuálny deň, alebo aj staršie položky">
       <button class="segb on" id="segCur" onclick="setAll(false)">Len aktuálne · 10.7.</button>
@@ -362,11 +362,12 @@ function allOwners(){
 function visible(it){return activeOwner==="Všetci" || (it.own||[]).includes(activeOwner);}
 
 function renderFilter(){
-  const lc=k=>{let n=0;state.sections.forEach(s=>s.items.forEach(it=>{if(it.list===k)n++;}));return n;};
-  const lchips=[["all","Všetko"],["uloha","Úlohy"],["napad","Nápady"],["poznamka","Poznámky"]]
-    .map(k=>`<button class="ochip ${activeKind===k[0]?'on':''}" onclick="setKind('${k[0]}')">${k[1]}${k[0]!=='all'?`<span class="n">${lc(k[0])}</span>`:''}</button>`).join("");
+  const owners=allOwners();
+  const order=["Pavol","Janči","Ondrej","Jozef","Katka","Miroslava","Anton","Saleh","Maz"];
+  owners.sort((a,b)=>{let i=order.indexOf(a),j=order.indexOf(b);return (i<0?99:i)-(j<0?99:j);});
+  const chips=["Všetci"].concat(owners).map(o=>`<button class="ochip ${activeOwner===o?'on':''}" onclick="setOwner('${o.replace(/'/g,"")}')">${esc(o)}</button>`).join("");
   const fb=document.getElementById("filterbar"); fb.style.display="";
-  fb.innerHTML=`<span class="flabel">Zoznam</span>${lchips}`;
+  fb.innerHTML=`<span class="flabel">Osoby</span>${chips}`;
 }
 function setOwner(o){activeOwner=o;renderFilter();render();}
 

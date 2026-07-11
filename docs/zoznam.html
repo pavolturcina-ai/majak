@@ -3,206 +3,580 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAJÁK — Zoznam (archív)</title>
-<meta name="description" content="Zoznam — archív všetkých položiek naprieč dňami vrátane hotových, v kategóriách Úlohy / Nápady / Poznámky.">
+<title>MAJÁK — Zoznam</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#f7f8f6;--card:#ffffff;--card-2:#fbfcfa;--ink:#151a1d;--ink-soft:#4a555b;--ink-faint:#8b969b;
-    --line:#e5e8e4;--line-soft:#eef1ee;--signal:#0e6b7a;--signal-tint:#e6f1f2;--signal-deep:#0a4f5a;
-    --win:#1f8a54;--win-tint:#e7f3ec;--warn:#b26a00;--threat:#c0392b;--decision:#5b3d8f;--carry:#8a6d1f;
-    --radius:14px;--shadow:0 1px 2px rgba(20,26,29,.04),0 6px 22px rgba(20,26,29,.05);
-    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    --disp:"Space Grotesk",var(--sans);--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+    --paper:#f7f8f6;--card:#ffffff;--ink:#151a1d;--ink-soft:#4a555b;--ink-faint:#8b969b;
+    --line:#e5e8e4;--line-soft:#eef1ee;--signal:#0e6b7a;--signal-tint:#e6f1f2;
+    --win:#1f8a54;--warn:#b26a00;--warn-tint:#f8eeda;--threat:#c0392b;--threat-tint:#fbe9e6;
+    --decision:#5b3d8f;--decision-tint:#efe9f6;--carry:#8a6d1f;--carry-tint:#faf3dd;
+    --radius:14px;--shadow:0 1px 2px rgba(20,26,29,.04), 0 6px 20px rgba(20,26,29,.05);
   }
-  @media (prefers-color-scheme:dark){:root{
-    --paper:#0f1413;--card:#161d1c;--card-2:#131a19;--ink:#e7ece9;--ink-soft:#9aa6a1;--ink-faint:#6c7a74;
-    --line:#27302d;--line-soft:#1e2624;--signal:#3fa9bb;--signal-tint:#123030;--signal-deep:#5cc0d0;
-    --win:#48b57a;--win-tint:#14281d;--warn:#d29a3e;--threat:#e0685c;--decision:#a488d6;--carry:#c9a94e;
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32);}}
-  :root[data-theme="dark"]{
-    --paper:#0f1413;--card:#161d1c;--card-2:#131a19;--ink:#e7ece9;--ink-soft:#9aa6a1;--ink-faint:#6c7a74;
-    --line:#27302d;--line-soft:#1e2624;--signal:#3fa9bb;--signal-tint:#123030;--signal-deep:#5cc0d0;
-    --win:#48b57a;--win-tint:#14281d;--warn:#d29a3e;--threat:#e0685c;--decision:#a488d6;--carry:#c9a94e;
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32);}
-  :root[data-theme="light"]{
-    --paper:#f7f8f6;--card:#fff;--card-2:#fbfcfa;--ink:#151a1d;--ink-soft:#4a555b;--ink-faint:#8b969b;
-    --line:#e5e8e4;--line-soft:#eef1ee;--signal:#0e6b7a;--signal-tint:#e6f1f2;--signal-deep:#0a4f5a;
-    --win:#1f8a54;--win-tint:#e7f3ec;--warn:#b26a00;--threat:#c0392b;--decision:#5b3d8f;--carry:#8a6d1f;
-    --shadow:0 1px 2px rgba(20,26,29,.04),0 6px 22px rgba(20,26,29,.05);}
   *{box-sizing:border-box}
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:60px}
-  .top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  .top .in{max-width:900px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:14px}
-  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
-  .beacon{width:26px;height:26px;border-radius:7px;flex:none;border:1px solid var(--line);position:relative;overflow:hidden;
-    background:radial-gradient(circle at 50% 32%,var(--signal) 0 26%,transparent 27%),
-    conic-gradient(from -34deg at 50% 36%,transparent 0 61%,color-mix(in srgb,var(--signal) 34%,transparent) 61% 75%,transparent 75%),var(--card)}
-  .logo b{font-family:var(--disp);font-weight:700;letter-spacing:.16em;font-size:15px}
-  .nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
-  .nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:6px 11px;border-radius:8px}
-  .nav a:hover{background:var(--signal-tint);color:var(--signal-deep)}
-  .nav a.active{background:var(--signal);color:#fff}
-  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
-  header.hd{padding:36px 0 16px}
-  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);font-weight:500;margin-bottom:10px}
-  h1{font-family:var(--disp);font-weight:700;font-size:clamp(26px,4vw,32px);letter-spacing:-.02em;margin:0 0 10px}
-  .lead{font-size:15.5px;color:var(--ink-soft);max-width:64ch;margin:0}
-  .bar{position:sticky;top:56px;z-index:40;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);padding:12px 0;border-bottom:1px solid var(--line-soft);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-  .grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .glabel{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint)}
-  .chip{font:inherit;font-size:12.5px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink-soft);border-radius:20px;padding:5px 12px;display:inline-flex;gap:6px;align-items:center}
-  .chip:hover{border-color:var(--signal);color:var(--signal-deep)}
-  .chip.on{background:var(--signal);color:#fff;border-color:var(--signal)}
-  .chip .n{font-family:var(--mono);font-size:10.5px;opacity:.75}
-  .chip.on .n{opacity:.9}
-  select{font:inherit;font-size:12.5px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:5px 9px}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;padding-bottom:70px;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
 
-  .list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
-  .row{background:var(--card);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);padding:12px 14px;position:relative;overflow:hidden}
-  .row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--rail,var(--ink-faint))}
-  .row.r-signal{--rail:var(--signal)}.row.r-dec{--rail:var(--decision)}.row.r-win{--rail:var(--win)}
-  .row.r-mid,.row.r-warn{--rail:var(--warn)}.row.r-hi{--rail:var(--threat)}.row.r-lo{--rail:var(--ink-faint)}
-  .row.done{opacity:.62}
-  .rtop{display:flex;align-items:flex-start;gap:10px}
-  .rt{flex:1;font-weight:560}
-  .row.done .rt{text-decoration:line-through;text-decoration-color:var(--ink-faint)}
-  .badge{flex:none;font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid var(--line)}
-  .badge.done{color:var(--win);background:var(--win-tint);border-color:color-mix(in srgb,var(--win) 35%,var(--line))}
-  .badge.open{color:var(--ink-faint)}
-  .rmeta{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:8px;font-size:12px;color:var(--ink-faint);font-family:var(--mono)}
-  .rmeta .day{color:var(--signal-deep)}
-  .tag{display:flex;gap:5px;margin-top:10px;align-items:center;flex-wrap:wrap}
-  .tag .tl{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-right:2px}
-  .lk{font:inherit;font-size:11.5px;cursor:pointer;border:1px solid var(--line);background:var(--card-2);color:var(--ink-soft);border-radius:7px;padding:3px 10px}
-  .lk:hover{border-color:var(--signal)}
-  .lk.on{background:var(--signal);color:#fff;border-color:var(--signal)}
-  .empty{color:var(--ink-faint);text-align:center;padding:40px 0;font-size:14px}
-  .count{font-family:var(--mono);font-size:12px;color:var(--ink-faint);margin:14px 0 0}
-  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:5px}
+  .toolbar{position:sticky;top:0;z-index:60;background:rgba(247,248,246,.92);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(20,26,29,.02);}
+  .toolbar .inner{max-width:980px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .brand{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--signal);font-weight:500;white-space:nowrap;}
+  .spacer{flex:1 1 12px}
+  .tbtn{font-size:12.5px;font-weight:500;color:var(--ink-soft);background:var(--card);
+    border:1px solid var(--line);border-radius:8px;padding:0 12px;height:32px;display:inline-flex;align-items:center;cursor:pointer;transition:.12s;white-space:nowrap;}
+  .tbtn:hover{border-color:var(--signal);color:var(--signal)}
+  .tbtn.warn:hover{border-color:var(--threat);color:var(--threat)}
+  .tdiv{width:1px;height:20px;background:var(--line);flex:0 0 auto;margin:0 3px}
+  .tgroup{display:inline-flex;gap:2px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:2px}
+  .ib{width:30px;height:28px;border:none;background:transparent;border-radius:6px;color:var(--ink-faint);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;padding:0}
+  .ib:hover{background:var(--line-soft);color:var(--ink)}
+  .ib.danger:hover{background:var(--threat-tint);color:var(--threat)}
+  .ib svg{width:16px;height:16px;display:block}
+  .saved{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint);white-space:nowrap;padding-left:2px}
+  .saved b{color:var(--win)}
+
+  .filterbar{max-width:980px;margin:0 auto;padding:8px 20px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .filterbar .flabel{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;margin-right:2px;}
+  .ochip{font-size:12px;font-weight:500;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);
+    border-radius:20px;padding:4px 11px;cursor:pointer;transition:.12s;}
+  .ochip:hover{border-color:var(--signal)}
+  .ochip.on{background:var(--signal);color:#fff;border-color:var(--signal)}
+
+  header{padding:20px 0 6px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);font-weight:500;margin-bottom:9px;display:flex;gap:9px;align-items:center;}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--signal)}
+  h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:32px;line-height:1.08;letter-spacing:-.02em;margin:0 0 14px;}
+  h1 [contenteditable]:focus{outline:none;background:var(--signal-tint);border-radius:6px;padding:0 4px}
+  .pulse{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--signal);border-radius:10px;padding:13px 15px;box-shadow:var(--shadow);font-size:14.5px;color:var(--ink-soft);}
+  .pulse [contenteditable]:focus{outline:none;background:var(--signal-tint);border-radius:6px}
+  .pulse b{color:var(--ink)}
+
+  .progress-wrap{margin:16px 0 4px;display:flex;align-items:center;gap:12px}
+  .bar{flex:1;height:8px;background:var(--line);border-radius:20px;overflow:hidden}
+  .bar > span{display:block;height:100%;background:var(--win);width:0;transition:width .3s}
+  .progress-lbl{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft);white-space:nowrap}
+
+  section{margin-top:28px}
+  .sec-head{display:flex;align-items:baseline;gap:11px;margin-bottom:12px}
+  .sec-num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-faint);font-weight:500;padding-top:3px}
+  .sec-title{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0}
+  .sec-count{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+  .add-btn{margin-left:auto;font-size:12.5px;font-weight:500;color:var(--signal);background:var(--signal-tint);border:none;border-radius:8px;padding:5px 11px;cursor:pointer}
+  .add-btn:hover{filter:brightness(.97)}
+  .qadd{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .qa{font-size:12px;font-weight:500;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 10px;cursor:pointer;transition:.12s}
+  .qa.uloha{color:var(--signal)} .qa.uloha:hover{background:var(--signal-tint);border-color:var(--signal)}
+  .qa.napad{color:var(--warn)} .qa.napad:hover{background:var(--warn-tint);border-color:var(--warn)}
+  .qa.poznamka{color:var(--decision)} .qa.poznamka:hover{background:var(--decision-tint);border-color:var(--decision)}
+  .kfilter{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 12px}
+  .kfch{font-size:12px;font-weight:500;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:4px 11px;cursor:pointer;transition:.12s}
+  .kfch:hover{border-color:var(--signal)}
+  .kfch.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .kfch .n{font-family:"IBM Plex Mono",monospace;font-size:10px;opacity:.65;margin-left:2px}
+  .kchip{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.03em;padding:1px 7px;border-radius:20px;white-space:nowrap;text-transform:uppercase}
+  .kchip.uloha{background:var(--signal-tint);color:var(--signal)}
+  .kchip.napad{background:var(--warn-tint);color:var(--warn)}
+  .kchip.poznamka{background:var(--decision-tint);color:var(--decision)}
+
+  .ic.list.on.uloha{color:var(--signal)}.ic.list.on.napad{color:var(--warn)}.ic.list.on.poznamka{color:var(--decision)}
+  .listmenu{position:absolute;top:42px;right:10px;z-index:40;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(20,26,29,.14);padding:5px;min-width:170px;display:grid;gap:2px}
+  .listmenu .lmh{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);padding:5px 8px 3px}
+  .lm{display:flex;align-items:center;gap:8px;text-align:left;font-size:13px;font-weight:500;border:none;background:transparent;border-radius:7px;padding:7px 8px;cursor:pointer;color:var(--ink)}
+  .lm:before{content:"";width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+  .lm.uloha:before{background:var(--signal)}.lm.napad:before{background:var(--warn)}.lm.poznamka:before{background:var(--decision)}
+  .lm:hover{background:var(--line-soft)}
+  .lm.rm{color:var(--ink-faint);border-top:1px solid var(--line-soft);border-radius:0;margin-top:2px}
+  .lm.rm:before{background:var(--ink-faint)}
+  .menuscrim{position:fixed;inset:0;z-index:30;background:transparent}
+  .fsep{width:1px;height:18px;background:var(--line);margin:0 4px;flex:0 0 auto}
+  .ochip .n{font-family:"IBM Plex Mono",monospace;font-size:10px;opacity:.6;margin-left:3px}
+  .ochip.kind.on.k-uloha{background:var(--signal);border-color:var(--signal)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+
+  .item{display:flex;gap:11px;padding:12px 13px;border-top:1px solid var(--line-soft);align-items:flex-start;position:relative}
+  .item:first-child{border-top:none}
+  .item.dragging{opacity:.4}
+  .item.drop-target{border-top:2px solid var(--signal)}
+  .rail{width:4px;align-self:stretch;border-radius:4px;flex:0 0 auto;background:var(--signal);min-height:34px}
+  .rail.hi{background:var(--threat)}.rail.mid{background:var(--warn)}.rail.lo{background:var(--ink-faint)}
+  .rail.dec{background:var(--decision)}.rail.win{background:var(--win)}
+  .handle{cursor:grab;color:var(--ink-faint);font-size:15px;line-height:1;padding:3px 2px;user-select:none;flex:0 0 auto}
+  .handle:active{cursor:grabbing}
+  .check{flex:0 0 auto;width:20px;height:20px;border:2px solid var(--line);border-radius:6px;cursor:pointer;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.12s;background:#fff}
+  .check:hover{border-color:var(--signal)}
+  .check.on{background:var(--win);border-color:var(--win)}
+  .check.on:after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+  .body{flex:1;min-width:0}
+  .idx{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:19px;color:var(--signal);min-width:22px;flex:0 0 auto;line-height:1.3}
+  .titleline{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
+  .title{font-weight:600;color:var(--ink);margin:0;font-size:14.5px}
+  .desc{font-size:13.5px;color:var(--ink-soft);margin:3px 0 0}
+  .item.done .title,.item.done .desc{text-decoration:line-through;color:var(--ink-faint)}
+  .item.done .rail{opacity:.35}
+  .meta{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint);margin-top:6px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.03em;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap}
+  .chip.owner{background:#eef1ee;color:var(--ink-soft)}
+  .chip.when{background:var(--signal-tint);color:var(--signal)}
+  .chip.hot{background:var(--threat-tint);color:var(--threat)}
+  .chip.src{background:#f0f2f0;color:var(--ink-faint)}
+  .carry{display:inline-flex;align-items:center;gap:3px;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:500;color:var(--carry);background:var(--carry-tint);border:1px solid #ece0b8;padding:1px 7px;border-radius:20px;white-space:nowrap}
+  .daybadge{display:inline-flex;align-items:center;gap:3px;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:500;color:#7a7266;background:#efece5;border:1px solid #ded8cc;padding:1px 7px;border-radius:20px;white-space:nowrap}
+  .item.old{background:#f4f2ee}
+  .item.old .rail{filter:saturate(.2);opacity:.6}
+  .item.old .title{color:#6f6a63;font-weight:600}
+  .item.old .desc{color:#8d877e}
+  .item.old .check{border-style:dashed}
+  .seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .segb{font-size:12px;font-weight:500;color:var(--ink-soft);background:transparent;border:none;padding:0 12px;height:32px;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap;transition:.12s}
+  .segb.on{background:var(--signal);color:#fff}
+
+  .srcpanel{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+  .srcpanel>summary{list-style:none;cursor:pointer;padding:12px 15px;display:flex;align-items:center;gap:10px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14.5px;color:var(--ink)}
+  .srcpanel>summary::-webkit-details-marker{display:none}
+  .srcpanel>summary .tri{color:var(--ink-faint);transition:transform .15s;display:inline-flex}
+  .srcpanel[open]>summary .tri{transform:rotate(90deg)}
+  .srcpanel>summary .scnt{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:400;color:var(--ink-faint)}
+  .srcbody{padding:4px 15px 15px;border-top:1px solid var(--line-soft)}
+  .srcgroup{margin-top:14px}
+  .srcgroup h4{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--signal);margin:0 0 8px;font-weight:500}
+  .mtg{border:1px solid var(--line);border-radius:9px;margin-bottom:7px;overflow:hidden;background:#fdfdfc}
+  .mtg>summary{list-style:none;cursor:pointer;padding:9px 12px;display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:500;color:var(--ink)}
+  .mtg>summary::-webkit-details-marker{display:none}
+  .mtg>summary .mday{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:20px;flex:0 0 auto}
+  .mday.d1{background:var(--signal-tint);color:var(--signal)}
+  .mday.d0{background:#efece5;color:#7a7266}
+  .mtg>summary .mttl{flex:1;min-width:0}
+  .mtg>summary .mdur{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint);white-space:nowrap}
+  .mtg>summary .tri{color:var(--ink-faint);transition:transform .15s;display:inline-flex}
+  .mtg[open]>summary .tri{transform:rotate(90deg)}
+  .minfo{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint);padding:0 12px 8px;line-height:1.5}
+  .tr{white-space:pre-wrap;font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.6;color:var(--ink-soft);background:#f7f8f6;border-top:1px solid var(--line-soft);margin:0;padding:12px;max-height:340px;overflow:auto}
+  .srclist{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+  .srclist li{display:flex;gap:8px;align-items:baseline;font-size:13px}
+  .srclist .k{font-family:"IBM Plex Mono",monospace;font-size:10px;color:#fff;background:var(--ink-faint);border-radius:4px;padding:1px 5px;flex:0 0 auto;margin-top:1px}
+  .srclist .k.sl{background:#4a154b}.srclist .k.gm{background:#c5221f}.srclist .k.jr{background:#0052cc}
+  .srclist a{color:var(--signal);text-decoration:none}
+  .srclist a:hover{text-decoration:underline}
+  .srclist .plain{color:var(--ink-soft)}
+
+  .ctx-toggle{margin-top:7px;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--signal);background:none;border:none;cursor:pointer;padding:2px 0}
+  .ctx-toggle .cnt{font-family:"IBM Plex Mono",monospace;font-size:10px;background:var(--signal-tint);border-radius:10px;padding:0 6px}
+  .ctx-toggle .caret{transition:transform .15s}
+  .ctx-toggle.open .caret{transform:rotate(90deg)}
+  .ctx{margin-top:9px;display:grid;gap:8px}
+  .quote{border-left:2px solid var(--line);padding:2px 0 2px 12px}
+  .quote .q{font-size:13px;color:var(--ink);font-style:italic;margin:0 0 4px;line-height:1.45}
+  .quote .attr{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .quote .who{color:var(--ink-soft);font-weight:500}
+  .quote a.jump{color:var(--signal);text-decoration:none;font-weight:500}
+  .quote a.jump:hover{text-decoration:underline}
+  .quote .loc{background:#f0f2f0;border-radius:10px;padding:0 6px}
+
+  .ctrls{display:flex;gap:2px;flex:0 0 auto;align-items:center}
+  .ic{width:28px;height:28px;border:none;background:transparent;border-radius:7px;cursor:pointer;color:var(--ink-faint);display:flex;align-items:center;justify-content:center;transition:.12s;padding:0}
+  .ic:hover{background:var(--line-soft);color:var(--ink)}
+  .ic.del:hover{background:var(--threat-tint);color:var(--threat)}
+  .ic svg{width:15px;height:15px;display:block}
+  .ic:disabled{opacity:.25;cursor:default}
+  .ic:disabled:hover{background:transparent;color:var(--ink-faint)}
+
+  .edit{flex:1;min-width:0}
+  .edit input,.edit textarea{width:100%;font-family:"Inter",sans-serif;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;color:var(--ink);margin-bottom:7px;resize:vertical;background:#fff}
+  .edit input:focus,.edit textarea:focus{outline:none;border-color:var(--signal)}
+  .edit input.t{font-weight:600}
+  .edit .erow{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:7px}
+  .edit .erow label{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+  .edit select{font-family:"Inter",sans-serif;font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:4px 7px;background:#fff}
+  .ebtns{display:flex;gap:7px}
+  .ebtn{font-size:12.5px;font-weight:500;border-radius:8px;padding:6px 13px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink-soft)}
+  .ebtn.save{background:var(--signal);color:#fff;border-color:var(--signal)}
+
+  .log{margin-top:30px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .log summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:center;gap:10px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:16px}
+  .log summary::-webkit-details-marker{display:none}
+  .log summary .cnt{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint);font-weight:400}
+  .log summary .roll{margin-left:auto;font-size:12px;font-weight:500;color:var(--signal);background:var(--signal-tint);border:none;border-radius:8px;padding:5px 11px;cursor:pointer}
+  .log .logrow{padding:9px 16px;border-top:1px solid var(--line-soft);display:flex;gap:10px;align-items:baseline;font-size:13.5px}
+  .log .logrow .lt{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint);white-space:nowrap}
+  .log .logrow .lx{color:var(--ink-soft);flex:1}
+  .log .empty{padding:9px 16px 14px;color:var(--ink-faint);font-size:13px}
+
+  .human{margin-top:30px;background:var(--decision-tint);border:1px solid #e4dcf0;border-radius:12px;padding:15px 17px;font-size:14px;color:#40325c}
+  .human .t{font-weight:600;color:var(--decision);margin:0 0 4px;font-family:"Space Grotesk",sans-serif}
+  .human [contenteditable]:focus{outline:none;background:#fff;border-radius:6px}
+
+  .hint{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint);margin:12px 2px 0;line-height:1.7}
+  .hint b{color:var(--ink-soft)}
+  footer{margin-top:34px;padding:16px 0 0;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-faint);line-height:1.7}
+  footer b{color:var(--ink-soft);font-weight:500}
+
+  .modal{position:fixed;inset:0;background:rgba(20,26,29,.4);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal.on{display:flex}
+  .modal .box{background:#fff;border-radius:14px;max-width:640px;width:100%;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .modal .mh{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .modal .mh h3{font-family:"Space Grotesk",sans-serif;margin:0;font-size:17px}
+  .modal .mh .x{margin-left:auto;border:none;background:none;font-size:20px;color:var(--ink-faint);cursor:pointer}
+  .modal textarea{flex:1;margin:14px 18px;border:1px solid var(--line);border-radius:10px;padding:12px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6;resize:none;min-height:240px;color:var(--ink)}
+  .modal .mf{padding:0 18px 16px;display:flex;gap:8px;justify-content:flex-end}
+
+  @media (max-width:640px){
+    .wrap{padding:0 13px}h1{font-size:26px}
+    .toolbar .inner,.filterbar{padding-left:13px;padding-right:13px}
+    .handle{display:none}.item{padding:11px 10px;gap:9px}.ic{width:32px;height:32px}
+  }
+  @media print{.toolbar,.filterbar,.ctrls,.add-btn,.handle,.check,.hint,.ctx-toggle,.log summary .roll{display:none!important}
+    body{background:#fff}.card,.log{box-shadow:none}.ctx{display:grid!important}}
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="in">
-    <a class="logo" href="./index.html"><span class="beacon" aria-hidden="true"></span><b>MAJÁK</b></a>
-    <nav class="nav">
+
+<div class="mjk-top">
+  <div class="mjk-in">
+    <a class="mjk-logo" href="./index.html"><span class="mjk-beacon" aria-hidden="true"></span><b>MAJÁK</b></a>
+    <nav class="mjk-nav">
       <a href="./index.html">Hub</a>
       <a href="./report.html">Report</a>
       <a href="./import.html">Import</a>
       <a href="./zoznam.html" class="active" aria-current="page">Zoznam</a>
+      <a href="./osoby.html">Osoby</a>
     </nav>
   </div>
 </div>
+<style>
+/* Shared MAJÁK cross-page menu — matches the Hub / Import / Zoznam nav. */
+.mjk-top{background:var(--card);border-bottom:1px solid var(--line);font-family:"Inter",system-ui,-apple-system,sans-serif}
+.mjk-in{max-width:980px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:14px}
+.mjk-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.mjk-logo b{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:.16em;font-size:15px}
+.mjk-beacon{width:26px;height:26px;border-radius:7px;flex:none;border:1px solid var(--line);position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 32%,var(--signal) 0 26%,transparent 27%),
+  conic-gradient(from -34deg at 50% 36%,transparent 0 61%,color-mix(in srgb,var(--signal) 34%,transparent) 61% 75%,transparent 75%),var(--card)}
+.mjk-nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.mjk-nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:6px 11px;border-radius:8px}
+.mjk-nav a:hover{background:var(--signal-tint);color:var(--signal)}
+.mjk-nav a.active{background:var(--signal);color:#fff}
+@media print{.mjk-top{display:none!important}}
+</style>
+
+<div class="toolbar">
+  <div class="inner">
+    <span class="brand">Zoznam · archív</span>
+    <span class="spacer"></span>
+    <div class="seg" title="Zobraziť len aktuálny deň, alebo aj staršie položky">
+      <button class="segb on" id="segCur" onclick="setAll(false)">Len aktuálne · 10.7.</button>
+      <button class="segb" id="segAll" onclick="setAll(true)">Všetko</button>
+    </div>
+    <button class="tbtn" id="hideBtn" onclick="toggleHideDone(this)">Skryť hotové</button>
+    <span class="tdiv"></span>
+    <div class="tgroup">
+      <button class="ib" title="Export – uložiť stav do súboru" onclick="doExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></button>
+      <button class="ib" title="Import – načítať stav zo súboru" onclick="document.getElementById('imp').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg></button>
+      <button class="ib" title="Tlač / PDF" onclick="window.print()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg></button>
+      <button class="ib danger" title="Reset – vrátiť pôvodné znenie" onclick="doReset()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"/><path d="M3.05 13a9 9 0 1 0 .5-4.06"/></svg></button>
+    </div>
+    <span class="saved" id="saved">uložené</span>
+    <input type="file" id="imp" accept="application/json" style="display:none" onchange="doImport(event)">
+  </div>
+  <div class="filterbar" id="filterbar"></div>
+</div>
+
 <div class="wrap">
-  <header class="hd">
-    <div class="eyebrow">Zoznam · archív</div>
-    <h1>Úlohy, nápady &amp; poznámky</h1>
-    <p class="lead">Archív <b>všetkých</b> položiek naprieč dňami — vrátane <b>hotových</b>. Ulož ľubovoľnú
-      položku ako úlohu, nápad alebo poznámku; tag sa zdieľa s reportom (rovnaké úložisko).</p>
+  <header>
+    <div class="eyebrow"><span class="dot"></span> GOSPACE LABS · denné vyhodnotenie</div>
+    <h1><span contenteditable="true" id="dayTitle" spellcheck="false"></span></h1>
+    <div class="pulse"><b>Pulz dňa:</b> <span contenteditable="true" id="pulseText" spellcheck="false"></span></div>
+    <div id="sources"></div>
+    <div class="progress-wrap"><div class="bar"><span id="barFill"></span></div><span class="progress-lbl" id="progLbl"></span></div>
   </header>
 
-  <div class="bar">
-    <div class="grp"><span class="glabel">Zoznam</span><span id="kinds"></span></div>
-    <div class="grp"><span class="glabel">Stav</span><span id="stats"></span></div>
-    <div class="grp"><span class="glabel">Vlastník</span><select id="owner"></select></div>
-  </div>
+  <div id="app"></div>
 
-  <div class="count" id="count"></div>
-  <div class="list" id="list"></div>
+  <details class="log" id="logBox">
+    <summary>Zavreté <span class="cnt" id="logCnt"></span><button class="roll" onclick="event.preventDefault();openRollup()">Týždenný roll-up ↗</button></summary>
+    <div id="logList"></div>
+  </details>
+
+  <div class="human"><p class="t">Ľudské</p><p contenteditable="true" spellcheck="false" style="margin:0" id="humanText"></p></div>
+
+  <p class="hint">
+    ✔ hotové &nbsp;·&nbsp; ✎ upraviť &nbsp;·&nbsp; ✕ zmazať &nbsp;·&nbsp; ↑↓ / ťahaj ⠿ presunúť &nbsp;·&nbsp; <b>záložka ▸</b> ulož položku do zoznamu ako <span class="kchip uloha">úloha</span> <span class="kchip napad">nápad</span> <span class="kchip poznamka">poznámka</span> &nbsp;·&nbsp; <b>kontext ›</b> = úryvok zo zdroja.<br>
+    Prepínač <b>Len aktuálne · 10.7. / Všetko</b> = dnešok alebo aj staršie (<span class="daybadge">◷ 9.7.</span>). Filter <b>Vlastník</b> a <b>Zoznam</b> (Úlohy/Nápady/Poznámky) hore. Odfajknuté padajú do <b>Zavreté</b> → roll-up. Všetko sa ukladá v prehliadači.
+  </p>
+  <footer>
+    <b>Princíp:</b> rozhodnutia ≠ úlohy. Kontext je doslovný zo zdrojov (porady, Slack, Gmail) — žiadne domýšľanie.<br>
+    Zdroje: 2 porady (US parking · ghostwriting) · Slack DM + group · Gmail inbox · 10.07.2026.
+  </footer>
+</div>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <div class="mh"><h3>Týždenný roll-up</h3><button class="x" onclick="closeModal()">×</button></div>
+    <textarea id="rollText" readonly></textarea>
+    <div class="mf"><button class="ebtn" onclick="closeModal()">Zavrieť</button><button class="ebtn save" onclick="copyRollup(this)">Kopírovať</button></div>
+  </div>
 </div>
 
 <script>
-(function(){
-  "use strict";
-  var STORE_KEY = "gospace-eval-2026-07-10-v6";
-  var SEED = {"dayTitle": "Piatok 10. júla 2026", "pulse": "Deň smerom von — expanzia do USA (univerzity, Vlado Hruda ako možný US investor) a osobný brand (ghostwriting). Doma: greenlight výroby (~58 tis. €), nová R&D iniciatíva (telco BTS dáta pre nowcasting) a upratovanie ISO (DNV → Elbacert). Hlavné riziko: rozptýlenie fokusu na priveľa trhov naraz.", "human": "V piatok nepribudlo nič citlivé. Otvorené ľudské follow-upy z minulého dňa (Žarka, priestor pre Katku) platia ďalej — netreba nič naháňať, len držať priestor.", "sections": [{"id": "top", "num": "01", "title": "TOP — čo nesmie spadnúť", "numbered": true, "track": true, "items": [{"t": "Dohodnúť call s Vladom Hrudom (US)", "d": "Ex-Google, Texas — ozval sa s ponukou investovať + pomôcť s produktom. Prepojiť s ventures, vyjasniť rozsah.", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["when", "budúci týždeň"], ["src", "USA porada"]], "ctx": [{"q": "Vlado Hruda… robil v Googly, potom išiel do štátov… povedal, že či nehľadám niekoho, kto by zainvestoval a pomohol s produktom.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:26:30", "url": null}, {"q": "Budúci týždeň s ním dohodnem call. / Toto má veľkú cenu, keď je to človek, ktorého chceš.", "who": "Pavol / Janči", "src": "Porada · US parking", "loc": "00:28:14", "url": null}], "day": "10.7."}, {"t": "Podpis Roman Cibulka — pondelok 13.7.", "d": "Detaily potvrdené: nástup 1.9., 8 h, 2 800 € brutto; Score Cards + ROCKs poslané. Potom odlieta do Kanady do konca augusta.", "rail": "signal", "own": ["Pavol", "Miroslava"], "carry": "z 9.7.", "chips": [["owner", "Pavol/Miroslava"], ["when", "pondelok 13.7."]], "ctx": [{"q": "Termín nástupu je 1. septembra 2026, úväzok 8 h/deň, mzda 2800 brutto/mesiac, správne?", "who": "Miroslava Petríčková", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0A1XK475JM/p1783680901386049"}, {"q": "Nie, 2800 je OK.", "who": "Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0A1XK475JM/p1783680901386049"}], "day": "10.7."}, {"t": "EC Call for Evidence (Horizon Europe) — deadline 14.7.", "d": "Roman dodal draft; dotiahnuť a podať do utorka. Padá hneď po víkende.", "rail": "signal", "own": ["Pavol"], "carry": "z 9.7.", "chips": [["hot", "deadline utorok"], ["owner", "Pavol → Andrej/Zuzana"]], "ctx": [{"q": "Prenesené z 9.7.: Roman poslal draft k EC Call for Evidence (Horizon Europe). Deadline 14.7., cez víkend.", "who": "—", "src": "Prenos + Gmail (9.7.)", "loc": "", "url": null}], "day": "10.7."}, {"t": "Potvrdiť Antonovi service agreement (KPI)", "d": "Anton prečítal Annex, pripravený podpísať v utorok — 3 veci doladiť, pridal ťa na potvrdenie.", "rail": "signal", "own": ["Pavol", "Anton"], "chips": [["owner", "Pavol"], ["when", "pred utorkom"], ["src", "Gmail"]], "ctx": [{"q": "Prečítal som všetko a v utorok som pripravený podpísať. Len 3 veci by som ešte rád doladil. Pavol, pridávam ťa, aby si potvrdil.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}], "day": "10.7."}, {"t": "Go/no-go na UVO tender + spustiť prípravu", "d": "Ondrej: zhoda 80–90 %, chcú kamery na 50 tokov, HW ~250 tis. €. Uzávierka 11.8. 13:00.", "rail": "signal", "own": ["Pavol", "Ondrej"], "chips": [["owner", "Pavol + Ondrej"], ["when", "uzávierka 11.8."], ["src", "Slack · UVO"]], "ctx": [{"q": "Máme tam zhodu na 80–90 % — niečo bude treba dotiahnuť, chcú kamery na 50 tokov. Naše náklady na HW odhadujem na 250 tis. €.", "who": "Ondrej Závodský", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783682272327089"}, {"q": "Poďme to vyhrať. Uzávierka 11.08.2026, 13:00.", "who": "Pavol", "src": "Slack · UVO tender", "loc": "", "url": "https://www.uvo.gov.sk/vyhladavanie/vyhladavanie-dokumentov/detail/3590589?cHash=ec03651395c23b51578a270a609d5a30"}], "day": "10.7."}, {"t": "Potvrdiť Miroslave podpis Romana Cibulku 13.7.", "d": "Roman vie podpísať v pondelok, potom Kanada do konca augusta — Miroslava čaká na potvrdenie, aby pripravila dokumenty.", "rail": "signal", "own": ["Pavol", "Miroslava"], "chips": [["owner", "Pavol"], ["src", "Gmail"]], "ctx": [{"q": "Pán Cibulka mi písal, že dokumenty vie podpísať v pondelok 13. júla. Bude v BA, potom odlieta do Kanady a vracia sa až koncom augusta.", "who": "Miroslava Petríčková", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4720586bf2d92"}], "day": "9.7."}, {"t": "Schváliť GOFACTORY objednávku 2026116 (Grécko / 250 ks)", "d": "Testovanie pre nového zákazníka v Grécku, ktorý potom chce 250 ks.", "rail": "signal", "own": ["Pavol", "Bohdan"], "chips": [["owner", "Pavol"], ["src", "Slack · Bohdan"]], "ctx": [{"q": "Čau Pali, prosím schváľ gofactory.gospace.tech/orders/2026116.", "who": "Bohdan Jacos", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02UUS5DA0P/p1783590862896739"}, {"q": "Je to testovanie do Grécka, nový zákazník — potom chcú objednať 250 ks.", "who": "Bohdan Jacos", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02UUS5DA0P/p1783590886656889"}], "day": "9.7."}, {"t": "Rozhodnúť smerovanie s Addsen (Miro Konečný)", "d": "Feedback bol obojstranne kritický; Miro chce spoluprácu nastaviť inak ako podmienku pokračovania. Teraz vs. po septembri.", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["src", "Porada"]], "ctx": [{"q": "Nastavenie spolupráce inak je pre Mira podmienkou pokračovania; navrhuje vrátiť sa po septembrových deadlinoch, Pavol chce ísť hneď.", "who": "Porada · Spätná väzba (Konečný)", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Dotiahnuť kontokorent 300–400 tis. €", "d": "Príprava OD kvôli súbehu objednávok a oneskorenej platby z Ríma.", "rail": "signal", "own": ["Pavol", "Janči"], "chips": [["owner", "Pavol + Janči"], ["src", "Porada"]], "ctx": [{"q": "Prevádzkovo beží príprava kontokorentu 300–400 tis. € a smerovanie peňazí z Rumunska do Slovenskej sporiteľne.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}]}, {"id": "dec", "num": "02", "title": "Rozhodnutia len pre teba", "track": true, "items": [{"t": "US GTM — koľko trhov naraz?", "d": "Taliansko + USA + Miami + Čína paralelne. Zvoliť poradie a fokus; pilot na 2 US univerzitách (~150 miest) ako prvý dôkaz trakcie.", "rail": "dec", "own": ["Pavol"], "chips": [["when", "strategicky"], ["src", "USA porada"]], "ctx": [{"q": "V štátoch by sme mali byť priamočiari — konkrétny problém, solution/ROI-driven use case, nie európske pieskovisko.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:30:57", "url": null}], "day": "10.7."}, {"t": "Ochrana tap-to-pay IP + on-prem napätie", "d": "Ako právne/technicky ochrániť unikát a vyhovieť mestám (SDK / „krabička v strede“). Pricing okolo tejto kontroly.", "rail": "dec", "own": ["Pavol"], "chips": [["when", "otvorené"]], "ctx": [{"q": "Tapping payment for parking je novinka — podľa mňa by sme to mali aj ochrániť.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:02:52", "url": null}, {"q": "Na hardvéri to vieme povoliť… a fajn je mať medzi tým to SDK, tú krabičku v strede — aj keby to niekto chcel on-premise.", "who": "Janči", "src": "Porada · US parking", "loc": "00:03:28", "url": null}], "day": "10.7."}, {"t": "Kandidátka „Roxy“ — fit na infra/enterprise?", "d": "KPI-driven manažérka, nie sales star; chýba priamy predaj technológie. Janči overuje feedback (ex-Kamuš).", "rail": "dec", "own": ["Pavol", "Janči"], "chips": [["owner", "Pavol + Janči"], ["when", "rozbehnuté"]], "ctx": [{"q": "Nie je to sales star, ale manažérska, KPI-driven — možno dobrý kauf. My nepotrebujeme sales stars, ale niekoho, kto drží kadenciu.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:34:07", "url": null}, {"q": "Ona nepredávala technológiu — robila kozmetiku, hotel a teraz Boat Around.", "who": "Janči", "src": "Porada · US parking", "loc": "00:35:01", "url": null}], "day": "10.7."}, {"t": "ISO: výpoveď DNV + podpis Elbacert — bez medzery", "d": "Remiar: výpoveď k expirácii 27001. Elbacert objednávka na stole (Katka Š.). Načasovať bez diery v certifikácii.", "rail": "dec", "own": ["Pavol", "Katka"], "chips": [["owner", "Pavol → Katka Š."], ["when", "podpísať"], ["src", "Gmail"]], "ctx": [{"q": "Áno, dajte výpoveď k dátumu platnosti certifikátu, ktorý končí — myslím, že je to 27001.", "who": "Milan Remiar", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19d961d5520f1c55"}, {"q": "OK, máš ready na stole na podpis, potom mi to nechaj na mojom stole.", "who": "Katka Škorcová", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f3d13ff33f6c19"}], "day": "10.7."}, {"t": "Starý spor (Kraubery / Gmitér) — vyrovnanie", "d": "Ísť cez gentleman agreement; Janči dohodne — obed v stredu.", "rail": "dec", "own": ["Janči"], "chips": [["owner", "Janči"], ["when", "streda"]], "ctx": [{"q": "Choď dohodnúť s Kraubery, nech za normálnych podmienok dôjde k vyrovnaniu. / Skôr by som uvažoval gentleman agreement.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:23:34", "url": null}, {"q": "Budem mať obed v stredu…", "who": "Janči", "src": "Porada · US parking", "loc": "00:23:09", "url": null}], "day": "10.7."}, {"t": "Ghostwriting s Miroslavom Sopkom — rozsah a odmena", "d": "Na calle budúci týždeň vyjasniť rozsah, frekvenciu, kanály, odmenu, schvaľovací proces.", "rail": "dec", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["when", "call budúci týždeň"]], "ctx": [{"q": "Rád by som si vyskladal mikrotím, aby tvorba kontentu nebola len na mne — hodnotový obsah smerom na biznis a leadership.", "who": "Pavol", "src": "Porada · Ghostwriting", "loc": "00:03:05", "url": null}, {"q": "Určite by sme sa o tom vedeli porozprávať.", "who": "Miroslav Sopko", "src": "Porada · Ghostwriting", "loc": "00:04:08", "url": null}], "day": "10.7."}, {"t": "Založiť 2–3 „fresh“ firmy na poličku", "d": "Podmienka fondu: firma < 5 rokov. Príležitosť sa skoro nebude opakovať.", "rail": "dec", "own": ["Pavol"], "chips": [["src", "Porada · Jaro"]], "ctx": [{"q": "Minimum viable = založiť teraz 2–3 čisté „fresh“ firmy (zaparkované), cap-table doriešiť neskôr.", "who": "Jaro Lupták", "src": "Porada · Financovanie (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Otvoriť equity/vesting diskusiu — kým nie sú peniaze na stole", "d": "Keď prídu peniaze, mení sa to na „heated debate“.", "rail": "dec", "own": ["Pavol"], "chips": [["src", "Porada · Jaro"]], "ctx": [{"q": "Motivovať top ľudí reálnou vestovanou equity a otvoriť to skôr, než prídu peniaze — potom sa dynamika mení na heated debate.", "who": "Jaro Lupták", "src": "Porada · Financovanie (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Rím — list o pokute za omeškanie?", "d": "Roma Servizi Mobilità mešká ~mesiac po advance; rozhodnúť pokuta vs. vzťah.", "rail": "dec", "own": ["Pavol", "Janči"], "chips": [["src", "Porada"]], "ctx": [{"q": "Oneskorená platba z Ríma (Roma Servizi Mobilità) — prevádzkovo otvorené.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Lukáš Sochár — ukončiť alebo sprísniť?", "d": "Nesúladný výkaz, pochybný prínos; medzitým udržať pre hodnotu pri parking tendroch.", "rail": "dec", "own": ["Pavol", "Katka"], "chips": [["src", "Porada"]], "ctx": [{"q": "Rozhodnutie o Lukášovi Sochárovi — udržať len pre hodnotu pri parkingových tendroch, inak sprísniť reporting.", "who": "Porada · personál", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}]}, {"id": "good", "num": "03", "title": "Dobré správy", "items": [{"t": "Vlado Hruda sa ozval", "d": "Ex-Google z Texasu ponúka investíciu + pomoc s produktom pre US.", "rail": "win", "own": ["Pavol"], "chips": [["src", "USA porada"]], "ctx": [{"q": "Fakt robil na dobrých produktoch, je etablovaný v Spojených štátoch — treba ho checknúť.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:27:43", "url": null}], "day": "10.7."}, {"t": "Výroba greenlit (~58 tis. €)", "d": "3 000 SPOTXL-NBIOT (38k€) + 1 000 SPOT-MINI (20k€) vrátane plastov.", "rail": "win", "own": ["Pavol", "Ondrej"], "chips": [["src", "Slack · Ondrej"]], "ctx": [{"q": "3000 ks SPOTXL-NBIOT — 38000 € vrátane plastov; 1000 ks SPOT-MINI — 20000 € vrátane plastov. Prosím o vyjadrenie.", "who": "Ondrej Závodský", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783668697635779"}, {"q": "Poďme na to.", "who": "Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783668697635779"}], "day": "10.7."}, {"t": "Roman Cibulka — zmluva potvrdená", "d": "Nástup 1.9., 2 800 €, 8 h; Score Cards + ROCKs poslané.", "rail": "win", "own": ["Pavol", "Miroslava"], "chips": [["src", "Slack · Miroslava"]], "ctx": [{"q": "Termín nástupu 1.9.2026, 8 h/deň, 2800 brutto. Poslané aj Score Cards a ROCKs pre líder vertikály Meratch.", "who": "Miroslava / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0A1XK475JM/p1783680901386049"}], "day": "10.7."}, {"t": "„SHMÚ na steroidoch“ — telco BTS dáta", "d": "Zapojiť Orange/Telekom/O2: útlm signálu BTS↔BTS → intenzita zrážok. Jozef pozná COST projekt.", "rail": "win", "own": ["Pavol", "Jozef"], "chips": [["src", "Slack · group"]], "ctx": [{"q": "IDEA: otvoriť rokovanie so slovenskými telco operátormi (Orange, Telekom, O2) — nech nám zdieľajú dáta BTS-to-BTS. Obohatenie pre nowcasting.", "who": "Pavol", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783684057627399"}, {"q": "Útlm signálu medzi BTS — priama úmera na vlhkosť medzi nimi. Preberieme na Floodar mtg.", "who": "Ondrej Závodský", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783688845978429"}, {"q": "Minulý rok skončil veľký COST projekt na túto tému — skúsim nájsť metodiku spracovania BTS.", "who": "Jozef Pecho", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783689338249759"}], "day": "10.7."}, {"t": "US univerzity ako segment", "d": "Veľké rozpočty, jasní decision-makeri (napr. University of Georgia, 8 000 miest).", "rail": "win", "own": ["Janči"], "chips": [["src", "USA porada"]], "ctx": [{"q": "50 univerzít ako zákazníci s miliónovými rozpočtami. Vyberme dve a spravme pilot na 150 miestach, nech máme traction.", "who": "Janči", "src": "Porada · US parking", "loc": "00:28:52", "url": null}], "day": "10.7."}, {"t": "UVO tender · zhoda 80–90 %", "d": "Reálna šanca; Ondrej pozerá technickú časť.", "rail": "win", "own": ["Ondrej"], "chips": [["src", "Slack · Ondrej"]], "ctx": [{"q": "Zhoda 80–90 %, HW ~250 tis. €, uzávierka 11.8.", "who": "Ondrej / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783682272327089"}], "day": "10.7."}, {"t": "SAV kontakty na lesné požiare", "d": "Cez Adama Bystroňa: Zoltan Balogh + Emil Gatial — wildfire/klíma smer.", "rail": "win", "own": ["Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Posielam nižšie: Zoltan Balogh (balogh@savba.sk), Emil Gatial (emil.gatial@savba.sk).", "who": "Adam Bystroň", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19ada381eabf30b0"}], "day": "10.7."}, {"t": "Anton — service agreement takmer hotový", "d": "Prečítal Annex, podpis v utorok (3 drobnosti).", "rail": "win", "own": ["Anton", "Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "V utorok pripravený podpísať, 3 veci doladiť.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}], "day": "10.7."}, {"t": "Sales v pohybe", "d": "Saleh ponuka PON2026251 (+9,5 € rezerva); Maz rieši ULI (prísľub objemu).", "rail": "win", "own": ["Saleh", "Maz"], "chips": [["src", "Slack"]], "ctx": [{"q": "Pridal som +9,5 € k novej cene pre prípad, že si vypýta zľavu (na senzoroch). / OK, go for it!", "who": "Saleh / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02V2QJU4DU/p1783673198399359"}, {"q": "Peter z ULI dal komplikovanú odpoveď — sľubujú veľký objem v budúcnosti, ale chcú rovnaké ceny.", "who": "Maz Johnrose", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D09RVF733PF/p1783670656542699"}], "day": "10.7."}, {"t": "Čína — office od septembra", "d": "Sary otvára office; možný spoločný trip pri Šanghaji.", "rail": "win", "own": ["Janči"], "chips": [["src", "USA porada"]], "ctx": [{"q": "Sary otvára office v Číne, celý september je tam. Mali by sme naplánovať trip.", "who": "Janči / Pavol", "src": "Porada · US parking", "loc": "00:41:59", "url": null}], "day": "10.7."}, {"t": "Prechod z vývoja do prevádzky", "d": "Floodar Basic na produkčnom webe; nowcasting v operatíve (2 systémy); senzorika sa pilotuje.", "rail": "win", "own": [], "chips": [["src", "Q2 review"]], "ctx": [{"q": "Firma prechádza z fázy vývoja do prevádzky — Floodar Basic je na produkčnom webe, nowcasting reálne beží.", "who": "Q2 review", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Atlantis prielom: 20 % → 85 %", "d": "Peter Gabriš rozšíril adresovateľné povodia; Žilina až 8-h varovanie.", "rail": "win", "own": [], "chips": [["src", "Q2 review"]], "ctx": [{"q": "Peter Gabriš rozšíril adresovateľné povodia z ~20 % na ~85 % novou metodikou segmentácie; Žilina až 8-h varovanie.", "who": "Q2 review", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Fondová príležitosť: 3 × ~45 M€", "d": "GOSPACE je later-stage s trakciou → môže ísť na max ticket.", "rail": "win", "own": [], "chips": [["src", "Porada · Jaro"]], "ctx": [{"q": "Otvorili sa tri fondy po ~45 mil. €; GOSPACE ako later-stage s trakciou môže ísť rovno na max ticket.", "who": "Jaro Lupták", "src": "Porada · Financovanie (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Nemocničné parkovanie LIVE od 1.7.", "d": "250 lekárov v rezervačnej app.", "rail": "win", "own": [], "chips": [["src", "Porada"]], "ctx": [{"q": "Nemocničné parkovanie: 250 lekárov v app od 1. 7.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Grécky lead · 250 ks", "d": "Testovanie pre nového zákazníka, po ňom záujem o 250 kusov.", "rail": "win", "own": ["Bohdan"], "chips": [["src", "Slack · Bohdan"]], "ctx": [{"q": "Testovanie do Grécka, nový zákazník — potom chcú objednať 250 ks.", "who": "Bohdan Jacos", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02UUS5DA0P/p1783590886656889"}], "day": "9.7."}, {"t": "Sľubná sales kandidátka (Petra Durceková)", "d": "Skúsená, systematická; Katka poslala profil.", "rail": "win", "own": ["Katka"], "chips": [["src", "Slack · Katka"]], "ctx": [{"q": "Katka poslala LinkedIn profil kandidátky (Petra Durceková).", "who": "Katarína Galajdová", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D09NAED4HCY/p1783601144172359"}], "day": "9.7."}]}, {"id": "threat", "num": "04", "title": "Hrozby & riziká", "items": [{"t": "Rozptýlenie fokusu na priveľa trhov", "d": "Taliansko + USA + Miami + Čína naraz. Mitigácia: zvoliť 1–2 priority, zvyšok parkovať.", "rail": "hi", "own": ["Pavol"], "chips": [["hot", "vysoká · strategická"], ["owner", "Pavol"]], "ctx": [{"q": "Musíme tú Ameriku rozdaniť, lebo oni idú do Miami… a máme podporu v Číne.", "who": "Janči", "src": "Porada · US parking", "loc": "00:39:42", "url": null}], "day": "10.7."}, {"t": "False-trigger senzoru (parking)", "d": "Spúšťa sa aj pri okoloidúcich; závislé na permissiách/OS (iPhone ~10 s). Blokuje B2C UX. Mitigácia: externý expert.", "rail": "hi", "own": ["Pavol"], "chips": [["hot", "vysoká · produkt"], ["owner", "Pavol"]], "ctx": [{"q": "Keď zaparkuješ za autom a niekto ide okolo, senzor sa triggerne… window je asi 5 minút, iPhone piluje po 10 sekundách.", "who": "Janči", "src": "Porada · US parking", "loc": "00:05:38", "url": null}, {"q": "Poradil by som sa s niekým, kto robí niečo podobné.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:06:51", "url": null}], "day": "10.7."}, {"t": "Dizajn/UX zaostáva za konkurenciou", "d": "Dashboard neprehľadný; „technokrati, nie farbičkári“. Mitigácia: upratať layout, nudges, inšpirácie.", "rail": "mid", "own": ["Janči"], "chips": [["owner", "Janči + dizajn"]], "ctx": [{"q": "Sme skôr technokrati ako farbičkári — a toto robí rozdiel, hlavne keď si B2C.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:11:38", "url": null}, {"q": "Konkurencia má ten face viac vyfarbičkovaný… ten dlhý názov to rozbil, upratuje sa to.", "who": "Janči", "src": "Porada · US parking", "loc": "00:14:55", "url": null}], "day": "10.7."}, {"t": "Vedenie US GTM — kto reálne ťahá?", "d": "Luke vs. nový človek; rozpočet na pilot; rozsah Hrudu nejasný. Mitigácia: vyjasniť na calle + definovať vlastníka.", "rail": "mid", "own": ["Pavol"], "chips": [["owner", "Pavol"]], "ctx": [{"q": "Luke by mal v Amerike každý druhý deň pitchovať a zbierať feedback — neviem, či sa to deje.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:32:39", "url": null}], "day": "10.7."}, {"t": "tap-to-pay IP nechránené + on-prem", "d": "Mestá chcú kontrolu. Mitigácia: firmvér enable/disable + SDK; pricing okolo kontroly.", "rail": "mid", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Mestá si dajú ako podmienku, že to nesmie byť mimo ich kontroly — treba to vyriešiť cez SDK.", "who": "Janči", "src": "Porada · US parking", "loc": "00:04:31", "url": null}], "day": "10.7."}, {"t": "Cashflow — greenlit výroby + Rím delay", "d": "~58 tis. € výroba + stále meškajúca platba z Ríma (z 9.7.). Mitigácia: kontokorent 300–400 tis. €.", "rail": "mid", "own": ["Pavol", "Janči"], "carry": "z 9.7.", "chips": [["owner", "Pavol + Janči"]], "ctx": [{"q": "Výroba za ~58 tis. € odsúhlasená v piatok; platba z Ríma z 9.7. stále mešká → tlak na cashflow.", "who": "—", "src": "Prenos + Slack", "loc": "", "url": null}], "day": "10.7."}, {"t": "ISO prechod — medzera v certifikácii", "d": "Výpoveď DNV a nábeh Elbacert načasovať bez diery (relevantné pre tendre).", "rail": "lo", "own": ["Pavol", "Katka"], "chips": [["owner", "Pavol + Katka Š."]], "ctx": [{"q": "Výpoveď DNV k expirácii 27001 + nábeh Elbacert — načasovať bez medzery.", "who": "Remiar / Katka", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19d961d5520f1c55"}], "day": "10.7."}, {"t": "Kandidátka „Roxy“ — profil vs. potreba", "d": "Bez priameho predaja technológie; riziko misfitu. Mitigácia: feedback + scorekarta.", "rail": "lo", "own": ["Janči"], "chips": [], "ctx": [{"q": "Overím feedback — poznáme ju u Kamuša.", "who": "Janči", "src": "Porada · US parking", "loc": "00:33:53", "url": null}], "day": "10.7."}, {"t": "Ghostwriting — nezáväznosť", "d": "Rozsah/odmena nedefinované, možná dovolenka. Mitigácia: overiť termín, vyjasniť rámec.", "rail": "lo", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Spamätávam sa teraz, nebudem sa vedieť hneď vyjadriť…", "who": "Miroslav Sopko", "src": "Porada · Ghostwriting", "loc": "00:04:08", "url": null}], "day": "10.7."}, {"t": "IP nowcastingu na open-source jadre", "d": "Pred expanziou do Poľska treba vlastný unikátny model (IP + odlíšenie).", "rail": "hi", "own": ["Pavol", "Miro"], "chips": [["hot", "vysoká · strategická"]], "ctx": [{"q": "Jadro je zatiaľ na open-source modeli — pred expanziou (Poľsko) treba priniesť vlastný unikátny model kvôli IP a odlíšeniu.", "who": "Miro Šinger / Q2 review", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Grantová konzultácia (Addsen) na hrane", "d": "Nejasná deľba zodpovednosti, konzorcium na poslednú chvíľu; Janči nereagoval na maily.", "rail": "hi", "own": ["Pavol", "Janči"], "chips": [["hot", "vysoká"]], "ctx": [{"q": "Miro: nerešpektovaný harmonogram, Janči neodpovedal na maily, ~90 % času konzultantky išlo na organizáciu namiesto kvality.", "who": "Miro Konečný", "src": "Porada · Spätná väzba (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Oneskorená platba z Ríma → cashflow", "d": "Roma Servizi Mobilità mešká ~mesiac po advance.", "rail": "mid", "own": ["Pavol", "Janči"], "chips": [], "ctx": [{"q": "Oneskorená platba z Ríma (Roma Servizi Mobilità) — tlak na cashflow, rieši sa kontokorent.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "SHMÚ archívne dáta blokované pre tréning", "d": "Plán B: Opera dáta + vlastný zber. Nesmie byť blokerom.", "rail": "lo", "own": ["Jozef", "Miro"], "chips": [], "ctx": [{"q": "SHMÚ archívne dáta blokované pre tréning nowcastingu → plán B (Opera dáta, vlastný zber).", "who": "Q2 review / nowcasting", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}]}, {"id": "deleg", "num": "05", "title": "Delegované / sledovať", "track": true, "items": [{"t": "Chytiť Vicenzu — 2 demo miesta, osloviť partnera (Arrive)", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči"], ["src", "EU GTM"]], "ctx": [{"q": "Potrebujeme chytiť Vicenzu, povedať, kde sú dve miesta, kde to ukážeme, a potom osloviť partnera.", "who": "Janči", "src": "Porada · US parking", "loc": "00:00:52", "url": null}], "day": "10.7."}, {"t": "Upratať dizajn dashboardu (viac vzduchu, interaktivita, nudges)", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči + dizajn"]], "ctx": [{"q": "Chalanom som dal zadanie, aby to bolo vzdušnejšie a interaktívnejšie — tie nudges tam chýbali.", "who": "Janči", "src": "Porada · US parking", "loc": "00:12:25", "url": null}], "day": "10.7."}, {"t": "Poslať Jančimu „scrapenné“ app screeny (dizajn inšpirácia)", "d": "", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["when", "čo najskôr"]], "ctx": [{"q": "Objavil som projekt, kde máš skoro všetky aplikácie a všetky skríny — pošlem ti to, dá sa tým inšpirovať.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:10:48", "url": null}], "day": "10.7."}, {"t": "Overiť feedback na „Roxy“ (ex-Kamuš) + CEO Boat Around/Exponé", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči"]], "ctx": [{"q": "Spýtam sa chalanov, aký majú na ňu feedback — poznáme ju u Kamuša.", "who": "Janči", "src": "Porada · US parking", "loc": "00:33:53", "url": null}], "day": "10.7."}, {"t": "Otvoriť talk s telco operátormi — BTS dáta pre nowcasting", "d": "", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["src", "Slack"]], "ctx": [{"q": "Cez uhorku otvoríme talk s operátormi. Beriem si to na starosť.", "who": "Pavol", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783689533370749"}], "day": "10.7."}, {"t": "Preveriť BTS metodiku (COST) + odborník na kalibráciu", "d": "", "rail": "signal", "own": ["Jozef"], "chips": [["owner", "Jozef Pecho"]], "ctx": [{"q": "Bude potrebné dáta správne kalibrovať a nájsť odborníka; skúsim nájsť metodiku z COST projektu.", "who": "Jozef Pecho", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783689338249759"}], "day": "10.7."}, {"t": "Technická časť UVO tenderu + kamery na 50 tokov", "d": "", "rail": "signal", "own": ["Ondrej"], "chips": [["owner", "Ondrej"], ["when", "→ 11.8."]], "ctx": [{"q": "Pozri technické a daj vedieť. Uzávierka 11.08.2026, 13:00.", "who": "Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783682272327089"}], "day": "10.7."}, {"t": "Sprocesovať objednávku ISO Elbacert (na podpis)", "d": "", "rail": "signal", "own": ["Katka"], "chips": [["owner", "Katka Škorcová"]], "ctx": [{"q": "Katka, prosím, sprocesuj. / OK, máš ready na stole na podpis.", "who": "Pavol / Katka", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f3d13ff33f6c19"}], "day": "10.7."}, {"t": "Uzavrieť starý spor (Kraubery) — vyrovnanie", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči"], ["when", "streda"]], "ctx": [{"q": "Obed v stredu; dohodnúť normálne vyrovnanie.", "who": "Janči / Pavol", "src": "Porada · US parking", "loc": "00:23:34", "url": null}], "day": "10.7."}, {"t": "Naplánovať trip do Číny (spojiť s návštevou pri Šanghaji)", "d": "", "rail": "signal", "own": ["Janči", "Pavol"], "chips": [["owner", "Janči + Pavol"], ["when", "~september"]], "ctx": [{"q": "Mali by sme naplánovať trip do Číny — dá sa spojiť s návštevou moderného mesta pri Šanghaji.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:42:33", "url": null}], "day": "10.7."}, {"t": "Vlastný unikátny nowcasting model pred PL prezentáciou", "d": "", "rail": "signal", "own": ["Miro"], "chips": [["owner", "Miro"]], "ctx": [{"q": "Pred expanziou do Poľska priniesť vlastný unikátny model (nie open-source jadro).", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Stratégia regionálneho meteo + feasibility rámec pre parking", "d": "Prvý výstup pre Romana po nástupe.", "rail": "signal", "own": ["Roman"], "chips": [["owner", "Roman Cibulka"]], "ctx": [{"q": "Roman Cibulka dostáva ako prvý výstup spracovať stratégiu regionálneho meteo a feasibility rámec pre parking.", "who": "Porada · Financovanie/Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "VUVH — výmena 12 senzorov + potvrdenie výhradného dodávateľa (Meratch)", "d": "", "rail": "signal", "own": ["Ondrej"], "chips": [["owner", "Tomáš Očenáš"], ["src", "Slack"]], "ctx": [{"q": "VUVH: riešime výmenu 12 ks — dodáme upravenú špecifikáciu + potvrdenie o výhradnom dodávateľovi Meratch, aby mohli kúpiť napriamo.", "who": "Tomáš Očenáš", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0ACJMTUSVA/p1783614323419229"}], "day": "9.7."}]}, {"id": "quick", "num": "06", "title": "Rýchle vybavenie (< 5 min)", "track": true, "items": [{"t": "Anton — potvrdiť 3 úpravy v service agreemente", "d": "", "rail": "lo", "own": ["Pavol", "Anton"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Pavol, pridávam ťa, aby si potvrdil, čo upravíme.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}], "day": "10.7."}, {"t": "Elbacert objednávka ISO — podpísať, nechať Katke Š.", "d": "", "rail": "lo", "own": ["Pavol", "Katka"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Máš ready na stole na podpis, potom mi to nechaj na mojom stole.", "who": "Katka Škorcová", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f3d13ff33f6c19"}], "day": "10.7."}, {"t": "DNV — odpovedať o výpovedi 27001 k expirácii", "d": "", "rail": "lo", "own": ["Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Dajte výpoveď k dátumu platnosti certifikátu (27001).", "who": "Milan Remiar", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19d961d5520f1c55"}], "day": "10.7."}, {"t": "FedEx — exportné colné vyhlásenie; prepošli logistike", "d": "", "rail": "lo", "own": ["Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "V prílohe sprievodný dokument pri vývoze a elektronické správy pre daňové účely.", "who": "FedEx (Jan Božik)", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4d107513134f1"}], "day": "10.7."}, {"t": "Maz — ULI: pozri e-mail, zladiť pricing pri prísľube objemu", "d": "", "rail": "lo", "own": ["Pavol", "Maz"], "chips": [["src", "Slack"]], "ctx": [{"q": "Check email please — Peter z ULI sľubuje veľký objem, ale chce rovnaké ceny. / Just replied.", "who": "Maz / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D09RVF733PF/p1783670656542699"}], "day": "10.7."}, {"t": "Zuzana O. — prepošli upravenú personálnu maticu", "d": "", "rail": "lo", "own": ["Pavol"], "chips": [["src", "Slack"]], "ctx": [{"q": "Pali, príde dnes od PM ešte raz upravená personálna matica — len mi to prosím všetko prepošli.", "who": "Zuzana Olšová", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D098WHX852Q/p1783599536395019"}], "day": "9.7."}, {"t": "Prepošli FOTC / Websupport faktúry na invoices", "d": "", "rail": "lo", "own": ["Pavol", "Katka"], "chips": [["src", "Gmail"]], "ctx": [{"q": "FOTC faktúra (566,89 €, splatnosť 17.7.) preposlaná Katke na invoices.", "who": "Pavol → Katka", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f41719f6a89c1d"}], "day": "9.7."}]}, {"id": "radar", "num": "07", "title": "Radar termínov", "items": [{"t": "Po 13.7.", "d": "Podpis Roman Cibulka · Q3/Meratch sync · návrat Roman+Obermajer · príchod 3 000 Lora", "rail": "signal", "own": ["Pavol", "Miroslava"], "chips": [], "ctx": [{"q": "Pán Cibulka mi písal, že pracovné dokumenty vie podpísať v pondelok 13. júla 2026. Bude v BA, potom odlieta do Kanady a vracia sa až koncom augusta.", "who": "Miroslava Petríčková", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4720586bf2d92"}], "day": "10.7."}, {"t": "Ut 14.7.", "d": "EC Call for Evidence deadline · podpis Anton (service agreement)", "rail": "hi", "own": ["Pavol", "Anton"], "carry": "z 9.7.", "chips": [], "ctx": [{"q": "V utorok som pripravený podpísať — 3 veci ešte doladiť.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}, {"q": "EC Call for Evidence — deadline 14.7. (prenesené z 9.7.).", "who": "—", "src": "Prenos + Gmail (9.7.)", "loc": "", "url": null}], "day": "10.7."}, {"t": "Streda", "d": "Janči — obed k starému sporu (Kraubery)", "rail": "signal", "own": ["Janči"], "chips": [], "ctx": [{"q": "Budem mať obed v stredu…", "who": "Janči", "src": "Porada · US parking", "loc": "00:23:09", "url": null}], "day": "10.7."}, {"t": "Budúci týždeň", "d": "Call Vlado Hruda · call Miroslav Sopko · Miláno + Praha (~20.7.)", "rail": "signal", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Budúci týždeň s ním dohodnem call.", "who": "Pavol (o Vladovi Hrudovi)", "src": "Porada · US parking", "loc": "00:28:14", "url": null}, {"q": "Môžeme si budúci týždeň — ak nemáte dovolenku — spraviť online call.", "who": "Pavol (Sopkovi)", "src": "Porada · Ghostwriting", "loc": "00:05:18", "url": null}], "day": "10.7."}, {"t": "Št 17.7.", "d": "Splatnosť faktúry FOTC (566,89 €)", "rail": "signal", "own": ["Pavol", "Katka"], "chips": [], "ctx": [{"q": "Invoice GWS/2026/07/002673 for the amount of 566,89 EUR, which is due before 2026-07-17.", "who": "Fly on the Cloud (FOTC)", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f41719f6a89c1d"}], "day": "10.7."}, {"t": "Pi 24.7.", "d": "Validácia kontaktu domény fleximodo.online", "rail": "signal", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Vzhľadom k registrácii domény fleximodo.online je nutné validovať správnosť údajov kontaktu držiteľa g-1596201, a to do 24.7.2026.", "who": "subreg.cz", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4732424be862b"}], "day": "10.7."}, {"t": "11.8. 13:00", "d": "Uzávierka UVO tenderu", "rail": "hi", "own": ["Ondrej"], "chips": [], "ctx": [{"q": "Uzávierka 11.08.2026, 13:00. Poďme to vyhrať.", "who": "Pavol", "src": "Slack · UVO tender", "loc": "", "url": "https://www.uvo.gov.sk/vyhladavanie/vyhladavanie-dokumentov/detail/3590589?cHash=ec03651395c23b51578a270a609d5a30"}], "day": "10.7."}, {"t": "~september", "d": "Nástup Roman + Sary (China office) · trip do Číny · EPA annual meeting", "rail": "signal", "own": ["Pavol", "Janči"], "chips": [], "ctx": [{"q": "Roman sa vracia z Kanady až koncom augusta (nástup 1.9.).", "who": "Miroslava Petríčková", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4720586bf2d92"}, {"q": "Sary otvára office v Číne, celý september je tam.", "who": "Janči", "src": "Porada · US parking", "loc": "00:41:59", "url": null}], "day": "10.7."}]}]};
-  function load(){try{var s=JSON.parse(localStorage.getItem(STORE_KEY));return (s&&s.sections)?s:SEED;}catch(e){return SEED;}}
-  function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state));}
-  var state = load();
-  var KINDS=[["all","Všetko"],["uloha","Úlohy"],["napad","Nápady"],["poznamka","Poznámky"]];
-  var STATUS=[["all","Všetko"],["open","Otvorené"],["done","Hotové"]];
-  var kind="all", status="all", owner="all";
-  var $=function(s){return document.querySelector(s)};
-  var esc=function(s){return (s==null?"":String(s)).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+const STORE_KEY="gospace-eval-2026-07-10-v6";
+const SEED={"dayTitle": "Piatok 10. júla 2026", "pulse": "Deň smerom von — expanzia do USA (univerzity, Vlado Hruda ako možný US investor) a osobný brand (ghostwriting). Doma: greenlight výroby (~58 tis. €), nová R&D iniciatíva (telco BTS dáta pre nowcasting) a upratovanie ISO (DNV → Elbacert). Hlavné riziko: rozptýlenie fokusu na priveľa trhov naraz.", "human": "V piatok nepribudlo nič citlivé. Otvorené ľudské follow-upy z minulého dňa (Žarka, priestor pre Katku) platia ďalej — netreba nič naháňať, len držať priestor.", "sections": [{"id": "top", "num": "01", "title": "TOP — čo nesmie spadnúť", "numbered": true, "track": true, "items": [{"t": "Dohodnúť call s Vladom Hrudom (US)", "d": "Ex-Google, Texas — ozval sa s ponukou investovať + pomôcť s produktom. Prepojiť s ventures, vyjasniť rozsah.", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["when", "budúci týždeň"], ["src", "USA porada"]], "ctx": [{"q": "Vlado Hruda… robil v Googly, potom išiel do štátov… povedal, že či nehľadám niekoho, kto by zainvestoval a pomohol s produktom.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:26:30", "url": null}, {"q": "Budúci týždeň s ním dohodnem call. / Toto má veľkú cenu, keď je to človek, ktorého chceš.", "who": "Pavol / Janči", "src": "Porada · US parking", "loc": "00:28:14", "url": null}], "day": "10.7."}, {"t": "Podpis Roman Cibulka — pondelok 13.7.", "d": "Detaily potvrdené: nástup 1.9., 8 h, 2 800 € brutto; Score Cards + ROCKs poslané. Potom odlieta do Kanady do konca augusta.", "rail": "signal", "own": ["Pavol", "Miroslava"], "carry": "z 9.7.", "chips": [["owner", "Pavol/Miroslava"], ["when", "pondelok 13.7."]], "ctx": [{"q": "Termín nástupu je 1. septembra 2026, úväzok 8 h/deň, mzda 2800 brutto/mesiac, správne?", "who": "Miroslava Petríčková", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0A1XK475JM/p1783680901386049"}, {"q": "Nie, 2800 je OK.", "who": "Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0A1XK475JM/p1783680901386049"}], "day": "10.7."}, {"t": "EC Call for Evidence (Horizon Europe) — deadline 14.7.", "d": "Roman dodal draft; dotiahnuť a podať do utorka. Padá hneď po víkende.", "rail": "signal", "own": ["Pavol"], "carry": "z 9.7.", "chips": [["hot", "deadline utorok"], ["owner", "Pavol → Andrej/Zuzana"]], "ctx": [{"q": "Prenesené z 9.7.: Roman poslal draft k EC Call for Evidence (Horizon Europe). Deadline 14.7., cez víkend.", "who": "—", "src": "Prenos + Gmail (9.7.)", "loc": "", "url": null}], "day": "10.7."}, {"t": "Potvrdiť Antonovi service agreement (KPI)", "d": "Anton prečítal Annex, pripravený podpísať v utorok — 3 veci doladiť, pridal ťa na potvrdenie.", "rail": "signal", "own": ["Pavol", "Anton"], "chips": [["owner", "Pavol"], ["when", "pred utorkom"], ["src", "Gmail"]], "ctx": [{"q": "Prečítal som všetko a v utorok som pripravený podpísať. Len 3 veci by som ešte rád doladil. Pavol, pridávam ťa, aby si potvrdil.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}], "day": "10.7."}, {"t": "Go/no-go na UVO tender + spustiť prípravu", "d": "Ondrej: zhoda 80–90 %, chcú kamery na 50 tokov, HW ~250 tis. €. Uzávierka 11.8. 13:00.", "rail": "signal", "own": ["Pavol", "Ondrej"], "chips": [["owner", "Pavol + Ondrej"], ["when", "uzávierka 11.8."], ["src", "Slack · UVO"]], "ctx": [{"q": "Máme tam zhodu na 80–90 % — niečo bude treba dotiahnuť, chcú kamery na 50 tokov. Naše náklady na HW odhadujem na 250 tis. €.", "who": "Ondrej Závodský", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783682272327089"}, {"q": "Poďme to vyhrať. Uzávierka 11.08.2026, 13:00.", "who": "Pavol", "src": "Slack · UVO tender", "loc": "", "url": "https://www.uvo.gov.sk/vyhladavanie/vyhladavanie-dokumentov/detail/3590589?cHash=ec03651395c23b51578a270a609d5a30"}], "day": "10.7."}, {"t": "Potvrdiť Miroslave podpis Romana Cibulku 13.7.", "d": "Roman vie podpísať v pondelok, potom Kanada do konca augusta — Miroslava čaká na potvrdenie, aby pripravila dokumenty.", "rail": "signal", "own": ["Pavol", "Miroslava"], "chips": [["owner", "Pavol"], ["src", "Gmail"]], "ctx": [{"q": "Pán Cibulka mi písal, že dokumenty vie podpísať v pondelok 13. júla. Bude v BA, potom odlieta do Kanady a vracia sa až koncom augusta.", "who": "Miroslava Petríčková", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4720586bf2d92"}], "day": "9.7."}, {"t": "Schváliť GOFACTORY objednávku 2026116 (Grécko / 250 ks)", "d": "Testovanie pre nového zákazníka v Grécku, ktorý potom chce 250 ks.", "rail": "signal", "own": ["Pavol", "Bohdan"], "chips": [["owner", "Pavol"], ["src", "Slack · Bohdan"]], "ctx": [{"q": "Čau Pali, prosím schváľ gofactory.gospace.tech/orders/2026116.", "who": "Bohdan Jacos", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02UUS5DA0P/p1783590862896739"}, {"q": "Je to testovanie do Grécka, nový zákazník — potom chcú objednať 250 ks.", "who": "Bohdan Jacos", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02UUS5DA0P/p1783590886656889"}], "day": "9.7."}, {"t": "Rozhodnúť smerovanie s Addsen (Miro Konečný)", "d": "Feedback bol obojstranne kritický; Miro chce spoluprácu nastaviť inak ako podmienku pokračovania. Teraz vs. po septembri.", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["src", "Porada"]], "ctx": [{"q": "Nastavenie spolupráce inak je pre Mira podmienkou pokračovania; navrhuje vrátiť sa po septembrových deadlinoch, Pavol chce ísť hneď.", "who": "Porada · Spätná väzba (Konečný)", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Dotiahnuť kontokorent 300–400 tis. €", "d": "Príprava OD kvôli súbehu objednávok a oneskorenej platby z Ríma.", "rail": "signal", "own": ["Pavol", "Janči"], "chips": [["owner", "Pavol + Janči"], ["src", "Porada"]], "ctx": [{"q": "Prevádzkovo beží príprava kontokorentu 300–400 tis. € a smerovanie peňazí z Rumunska do Slovenskej sporiteľne.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}]}, {"id": "dec", "num": "02", "title": "Rozhodnutia len pre teba", "track": true, "items": [{"t": "US GTM — koľko trhov naraz?", "d": "Taliansko + USA + Miami + Čína paralelne. Zvoliť poradie a fokus; pilot na 2 US univerzitách (~150 miest) ako prvý dôkaz trakcie.", "rail": "dec", "own": ["Pavol"], "chips": [["when", "strategicky"], ["src", "USA porada"]], "ctx": [{"q": "V štátoch by sme mali byť priamočiari — konkrétny problém, solution/ROI-driven use case, nie európske pieskovisko.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:30:57", "url": null}], "day": "10.7."}, {"t": "Ochrana tap-to-pay IP + on-prem napätie", "d": "Ako právne/technicky ochrániť unikát a vyhovieť mestám (SDK / „krabička v strede“). Pricing okolo tejto kontroly.", "rail": "dec", "own": ["Pavol"], "chips": [["when", "otvorené"]], "ctx": [{"q": "Tapping payment for parking je novinka — podľa mňa by sme to mali aj ochrániť.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:02:52", "url": null}, {"q": "Na hardvéri to vieme povoliť… a fajn je mať medzi tým to SDK, tú krabičku v strede — aj keby to niekto chcel on-premise.", "who": "Janči", "src": "Porada · US parking", "loc": "00:03:28", "url": null}], "day": "10.7."}, {"t": "Kandidátka „Roxy“ — fit na infra/enterprise?", "d": "KPI-driven manažérka, nie sales star; chýba priamy predaj technológie. Janči overuje feedback (ex-Kamuš).", "rail": "dec", "own": ["Pavol", "Janči"], "chips": [["owner", "Pavol + Janči"], ["when", "rozbehnuté"]], "ctx": [{"q": "Nie je to sales star, ale manažérska, KPI-driven — možno dobrý kauf. My nepotrebujeme sales stars, ale niekoho, kto drží kadenciu.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:34:07", "url": null}, {"q": "Ona nepredávala technológiu — robila kozmetiku, hotel a teraz Boat Around.", "who": "Janči", "src": "Porada · US parking", "loc": "00:35:01", "url": null}], "day": "10.7."}, {"t": "ISO: výpoveď DNV + podpis Elbacert — bez medzery", "d": "Remiar: výpoveď k expirácii 27001. Elbacert objednávka na stole (Katka Š.). Načasovať bez diery v certifikácii.", "rail": "dec", "own": ["Pavol", "Katka"], "chips": [["owner", "Pavol → Katka Š."], ["when", "podpísať"], ["src", "Gmail"]], "ctx": [{"q": "Áno, dajte výpoveď k dátumu platnosti certifikátu, ktorý končí — myslím, že je to 27001.", "who": "Milan Remiar", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19d961d5520f1c55"}, {"q": "OK, máš ready na stole na podpis, potom mi to nechaj na mojom stole.", "who": "Katka Škorcová", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f3d13ff33f6c19"}], "day": "10.7."}, {"t": "Starý spor (Kraubery / Gmitér) — vyrovnanie", "d": "Ísť cez gentleman agreement; Janči dohodne — obed v stredu.", "rail": "dec", "own": ["Janči"], "chips": [["owner", "Janči"], ["when", "streda"]], "ctx": [{"q": "Choď dohodnúť s Kraubery, nech za normálnych podmienok dôjde k vyrovnaniu. / Skôr by som uvažoval gentleman agreement.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:23:34", "url": null}, {"q": "Budem mať obed v stredu…", "who": "Janči", "src": "Porada · US parking", "loc": "00:23:09", "url": null}], "day": "10.7."}, {"t": "Ghostwriting s Miroslavom Sopkom — rozsah a odmena", "d": "Na calle budúci týždeň vyjasniť rozsah, frekvenciu, kanály, odmenu, schvaľovací proces.", "rail": "dec", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["when", "call budúci týždeň"]], "ctx": [{"q": "Rád by som si vyskladal mikrotím, aby tvorba kontentu nebola len na mne — hodnotový obsah smerom na biznis a leadership.", "who": "Pavol", "src": "Porada · Ghostwriting", "loc": "00:03:05", "url": null}, {"q": "Určite by sme sa o tom vedeli porozprávať.", "who": "Miroslav Sopko", "src": "Porada · Ghostwriting", "loc": "00:04:08", "url": null}], "day": "10.7."}, {"t": "Založiť 2–3 „fresh“ firmy na poličku", "d": "Podmienka fondu: firma < 5 rokov. Príležitosť sa skoro nebude opakovať.", "rail": "dec", "own": ["Pavol"], "chips": [["src", "Porada · Jaro"]], "ctx": [{"q": "Minimum viable = založiť teraz 2–3 čisté „fresh“ firmy (zaparkované), cap-table doriešiť neskôr.", "who": "Jaro Lupták", "src": "Porada · Financovanie (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Otvoriť equity/vesting diskusiu — kým nie sú peniaze na stole", "d": "Keď prídu peniaze, mení sa to na „heated debate“.", "rail": "dec", "own": ["Pavol"], "chips": [["src", "Porada · Jaro"]], "ctx": [{"q": "Motivovať top ľudí reálnou vestovanou equity a otvoriť to skôr, než prídu peniaze — potom sa dynamika mení na heated debate.", "who": "Jaro Lupták", "src": "Porada · Financovanie (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Rím — list o pokute za omeškanie?", "d": "Roma Servizi Mobilità mešká ~mesiac po advance; rozhodnúť pokuta vs. vzťah.", "rail": "dec", "own": ["Pavol", "Janči"], "chips": [["src", "Porada"]], "ctx": [{"q": "Oneskorená platba z Ríma (Roma Servizi Mobilità) — prevádzkovo otvorené.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Lukáš Sochár — ukončiť alebo sprísniť?", "d": "Nesúladný výkaz, pochybný prínos; medzitým udržať pre hodnotu pri parking tendroch.", "rail": "dec", "own": ["Pavol", "Katka"], "chips": [["src", "Porada"]], "ctx": [{"q": "Rozhodnutie o Lukášovi Sochárovi — udržať len pre hodnotu pri parkingových tendroch, inak sprísniť reporting.", "who": "Porada · personál", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}]}, {"id": "good", "num": "03", "title": "Dobré správy", "items": [{"t": "Vlado Hruda sa ozval", "d": "Ex-Google z Texasu ponúka investíciu + pomoc s produktom pre US.", "rail": "win", "own": ["Pavol"], "chips": [["src", "USA porada"]], "ctx": [{"q": "Fakt robil na dobrých produktoch, je etablovaný v Spojených štátoch — treba ho checknúť.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:27:43", "url": null}], "day": "10.7."}, {"t": "Výroba greenlit (~58 tis. €)", "d": "3 000 SPOTXL-NBIOT (38k€) + 1 000 SPOT-MINI (20k€) vrátane plastov.", "rail": "win", "own": ["Pavol", "Ondrej"], "chips": [["src", "Slack · Ondrej"]], "ctx": [{"q": "3000 ks SPOTXL-NBIOT — 38000 € vrátane plastov; 1000 ks SPOT-MINI — 20000 € vrátane plastov. Prosím o vyjadrenie.", "who": "Ondrej Závodský", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783668697635779"}, {"q": "Poďme na to.", "who": "Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783668697635779"}], "day": "10.7."}, {"t": "Roman Cibulka — zmluva potvrdená", "d": "Nástup 1.9., 2 800 €, 8 h; Score Cards + ROCKs poslané.", "rail": "win", "own": ["Pavol", "Miroslava"], "chips": [["src", "Slack · Miroslava"]], "ctx": [{"q": "Termín nástupu 1.9.2026, 8 h/deň, 2800 brutto. Poslané aj Score Cards a ROCKs pre líder vertikály Meratch.", "who": "Miroslava / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0A1XK475JM/p1783680901386049"}], "day": "10.7."}, {"t": "„SHMÚ na steroidoch“ — telco BTS dáta", "d": "Zapojiť Orange/Telekom/O2: útlm signálu BTS↔BTS → intenzita zrážok. Jozef pozná COST projekt.", "rail": "win", "own": ["Pavol", "Jozef"], "chips": [["src", "Slack · group"]], "ctx": [{"q": "IDEA: otvoriť rokovanie so slovenskými telco operátormi (Orange, Telekom, O2) — nech nám zdieľajú dáta BTS-to-BTS. Obohatenie pre nowcasting.", "who": "Pavol", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783684057627399"}, {"q": "Útlm signálu medzi BTS — priama úmera na vlhkosť medzi nimi. Preberieme na Floodar mtg.", "who": "Ondrej Závodský", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783688845978429"}, {"q": "Minulý rok skončil veľký COST projekt na túto tému — skúsim nájsť metodiku spracovania BTS.", "who": "Jozef Pecho", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783689338249759"}], "day": "10.7."}, {"t": "US univerzity ako segment", "d": "Veľké rozpočty, jasní decision-makeri (napr. University of Georgia, 8 000 miest).", "rail": "win", "own": ["Janči"], "chips": [["src", "USA porada"]], "ctx": [{"q": "50 univerzít ako zákazníci s miliónovými rozpočtami. Vyberme dve a spravme pilot na 150 miestach, nech máme traction.", "who": "Janči", "src": "Porada · US parking", "loc": "00:28:52", "url": null}], "day": "10.7."}, {"t": "UVO tender · zhoda 80–90 %", "d": "Reálna šanca; Ondrej pozerá technickú časť.", "rail": "win", "own": ["Ondrej"], "chips": [["src", "Slack · Ondrej"]], "ctx": [{"q": "Zhoda 80–90 %, HW ~250 tis. €, uzávierka 11.8.", "who": "Ondrej / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783682272327089"}], "day": "10.7."}, {"t": "SAV kontakty na lesné požiare", "d": "Cez Adama Bystroňa: Zoltan Balogh + Emil Gatial — wildfire/klíma smer.", "rail": "win", "own": ["Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Posielam nižšie: Zoltan Balogh (balogh@savba.sk), Emil Gatial (emil.gatial@savba.sk).", "who": "Adam Bystroň", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19ada381eabf30b0"}], "day": "10.7."}, {"t": "Anton — service agreement takmer hotový", "d": "Prečítal Annex, podpis v utorok (3 drobnosti).", "rail": "win", "own": ["Anton", "Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "V utorok pripravený podpísať, 3 veci doladiť.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}], "day": "10.7."}, {"t": "Sales v pohybe", "d": "Saleh ponuka PON2026251 (+9,5 € rezerva); Maz rieši ULI (prísľub objemu).", "rail": "win", "own": ["Saleh", "Maz"], "chips": [["src", "Slack"]], "ctx": [{"q": "Pridal som +9,5 € k novej cene pre prípad, že si vypýta zľavu (na senzoroch). / OK, go for it!", "who": "Saleh / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02V2QJU4DU/p1783673198399359"}, {"q": "Peter z ULI dal komplikovanú odpoveď — sľubujú veľký objem v budúcnosti, ale chcú rovnaké ceny.", "who": "Maz Johnrose", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D09RVF733PF/p1783670656542699"}], "day": "10.7."}, {"t": "Čína — office od septembra", "d": "Sary otvára office; možný spoločný trip pri Šanghaji.", "rail": "win", "own": ["Janči"], "chips": [["src", "USA porada"]], "ctx": [{"q": "Sary otvára office v Číne, celý september je tam. Mali by sme naplánovať trip.", "who": "Janči / Pavol", "src": "Porada · US parking", "loc": "00:41:59", "url": null}], "day": "10.7."}, {"t": "Prechod z vývoja do prevádzky", "d": "Floodar Basic na produkčnom webe; nowcasting v operatíve (2 systémy); senzorika sa pilotuje.", "rail": "win", "own": [], "chips": [["src", "Q2 review"]], "ctx": [{"q": "Firma prechádza z fázy vývoja do prevádzky — Floodar Basic je na produkčnom webe, nowcasting reálne beží.", "who": "Q2 review", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Atlantis prielom: 20 % → 85 %", "d": "Peter Gabriš rozšíril adresovateľné povodia; Žilina až 8-h varovanie.", "rail": "win", "own": [], "chips": [["src", "Q2 review"]], "ctx": [{"q": "Peter Gabriš rozšíril adresovateľné povodia z ~20 % na ~85 % novou metodikou segmentácie; Žilina až 8-h varovanie.", "who": "Q2 review", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Fondová príležitosť: 3 × ~45 M€", "d": "GOSPACE je later-stage s trakciou → môže ísť na max ticket.", "rail": "win", "own": [], "chips": [["src", "Porada · Jaro"]], "ctx": [{"q": "Otvorili sa tri fondy po ~45 mil. €; GOSPACE ako later-stage s trakciou môže ísť rovno na max ticket.", "who": "Jaro Lupták", "src": "Porada · Financovanie (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Nemocničné parkovanie LIVE od 1.7.", "d": "250 lekárov v rezervačnej app.", "rail": "win", "own": [], "chips": [["src", "Porada"]], "ctx": [{"q": "Nemocničné parkovanie: 250 lekárov v app od 1. 7.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Grécky lead · 250 ks", "d": "Testovanie pre nového zákazníka, po ňom záujem o 250 kusov.", "rail": "win", "own": ["Bohdan"], "chips": [["src", "Slack · Bohdan"]], "ctx": [{"q": "Testovanie do Grécka, nový zákazník — potom chcú objednať 250 ks.", "who": "Bohdan Jacos", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02UUS5DA0P/p1783590886656889"}], "day": "9.7."}, {"t": "Sľubná sales kandidátka (Petra Durceková)", "d": "Skúsená, systematická; Katka poslala profil.", "rail": "win", "own": ["Katka"], "chips": [["src", "Slack · Katka"]], "ctx": [{"q": "Katka poslala LinkedIn profil kandidátky (Petra Durceková).", "who": "Katarína Galajdová", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D09NAED4HCY/p1783601144172359"}], "day": "9.7."}]}, {"id": "threat", "num": "04", "title": "Hrozby & riziká", "items": [{"t": "Rozptýlenie fokusu na priveľa trhov", "d": "Taliansko + USA + Miami + Čína naraz. Mitigácia: zvoliť 1–2 priority, zvyšok parkovať.", "rail": "hi", "own": ["Pavol"], "chips": [["hot", "vysoká · strategická"], ["owner", "Pavol"]], "ctx": [{"q": "Musíme tú Ameriku rozdaniť, lebo oni idú do Miami… a máme podporu v Číne.", "who": "Janči", "src": "Porada · US parking", "loc": "00:39:42", "url": null}], "day": "10.7."}, {"t": "False-trigger senzoru (parking)", "d": "Spúšťa sa aj pri okoloidúcich; závislé na permissiách/OS (iPhone ~10 s). Blokuje B2C UX. Mitigácia: externý expert.", "rail": "hi", "own": ["Pavol"], "chips": [["hot", "vysoká · produkt"], ["owner", "Pavol"]], "ctx": [{"q": "Keď zaparkuješ za autom a niekto ide okolo, senzor sa triggerne… window je asi 5 minút, iPhone piluje po 10 sekundách.", "who": "Janči", "src": "Porada · US parking", "loc": "00:05:38", "url": null}, {"q": "Poradil by som sa s niekým, kto robí niečo podobné.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:06:51", "url": null}], "day": "10.7."}, {"t": "Dizajn/UX zaostáva za konkurenciou", "d": "Dashboard neprehľadný; „technokrati, nie farbičkári“. Mitigácia: upratať layout, nudges, inšpirácie.", "rail": "mid", "own": ["Janči"], "chips": [["owner", "Janči + dizajn"]], "ctx": [{"q": "Sme skôr technokrati ako farbičkári — a toto robí rozdiel, hlavne keď si B2C.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:11:38", "url": null}, {"q": "Konkurencia má ten face viac vyfarbičkovaný… ten dlhý názov to rozbil, upratuje sa to.", "who": "Janči", "src": "Porada · US parking", "loc": "00:14:55", "url": null}], "day": "10.7."}, {"t": "Vedenie US GTM — kto reálne ťahá?", "d": "Luke vs. nový človek; rozpočet na pilot; rozsah Hrudu nejasný. Mitigácia: vyjasniť na calle + definovať vlastníka.", "rail": "mid", "own": ["Pavol"], "chips": [["owner", "Pavol"]], "ctx": [{"q": "Luke by mal v Amerike každý druhý deň pitchovať a zbierať feedback — neviem, či sa to deje.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:32:39", "url": null}], "day": "10.7."}, {"t": "tap-to-pay IP nechránené + on-prem", "d": "Mestá chcú kontrolu. Mitigácia: firmvér enable/disable + SDK; pricing okolo kontroly.", "rail": "mid", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Mestá si dajú ako podmienku, že to nesmie byť mimo ich kontroly — treba to vyriešiť cez SDK.", "who": "Janči", "src": "Porada · US parking", "loc": "00:04:31", "url": null}], "day": "10.7."}, {"t": "Cashflow — greenlit výroby + Rím delay", "d": "~58 tis. € výroba + stále meškajúca platba z Ríma (z 9.7.). Mitigácia: kontokorent 300–400 tis. €.", "rail": "mid", "own": ["Pavol", "Janči"], "carry": "z 9.7.", "chips": [["owner", "Pavol + Janči"]], "ctx": [{"q": "Výroba za ~58 tis. € odsúhlasená v piatok; platba z Ríma z 9.7. stále mešká → tlak na cashflow.", "who": "—", "src": "Prenos + Slack", "loc": "", "url": null}], "day": "10.7."}, {"t": "ISO prechod — medzera v certifikácii", "d": "Výpoveď DNV a nábeh Elbacert načasovať bez diery (relevantné pre tendre).", "rail": "lo", "own": ["Pavol", "Katka"], "chips": [["owner", "Pavol + Katka Š."]], "ctx": [{"q": "Výpoveď DNV k expirácii 27001 + nábeh Elbacert — načasovať bez medzery.", "who": "Remiar / Katka", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19d961d5520f1c55"}], "day": "10.7."}, {"t": "Kandidátka „Roxy“ — profil vs. potreba", "d": "Bez priameho predaja technológie; riziko misfitu. Mitigácia: feedback + scorekarta.", "rail": "lo", "own": ["Janči"], "chips": [], "ctx": [{"q": "Overím feedback — poznáme ju u Kamuša.", "who": "Janči", "src": "Porada · US parking", "loc": "00:33:53", "url": null}], "day": "10.7."}, {"t": "Ghostwriting — nezáväznosť", "d": "Rozsah/odmena nedefinované, možná dovolenka. Mitigácia: overiť termín, vyjasniť rámec.", "rail": "lo", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Spamätávam sa teraz, nebudem sa vedieť hneď vyjadriť…", "who": "Miroslav Sopko", "src": "Porada · Ghostwriting", "loc": "00:04:08", "url": null}], "day": "10.7."}, {"t": "IP nowcastingu na open-source jadre", "d": "Pred expanziou do Poľska treba vlastný unikátny model (IP + odlíšenie).", "rail": "hi", "own": ["Pavol", "Miro"], "chips": [["hot", "vysoká · strategická"]], "ctx": [{"q": "Jadro je zatiaľ na open-source modeli — pred expanziou (Poľsko) treba priniesť vlastný unikátny model kvôli IP a odlíšeniu.", "who": "Miro Šinger / Q2 review", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Grantová konzultácia (Addsen) na hrane", "d": "Nejasná deľba zodpovednosti, konzorcium na poslednú chvíľu; Janči nereagoval na maily.", "rail": "hi", "own": ["Pavol", "Janči"], "chips": [["hot", "vysoká"]], "ctx": [{"q": "Miro: nerešpektovaný harmonogram, Janči neodpovedal na maily, ~90 % času konzultantky išlo na organizáciu namiesto kvality.", "who": "Miro Konečný", "src": "Porada · Spätná väzba (9.7.)", "loc": "", "url": null}], "day": "9.7."}, {"t": "Oneskorená platba z Ríma → cashflow", "d": "Roma Servizi Mobilità mešká ~mesiac po advance.", "rail": "mid", "own": ["Pavol", "Janči"], "chips": [], "ctx": [{"q": "Oneskorená platba z Ríma (Roma Servizi Mobilità) — tlak na cashflow, rieši sa kontokorent.", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "SHMÚ archívne dáta blokované pre tréning", "d": "Plán B: Opera dáta + vlastný zber. Nesmie byť blokerom.", "rail": "lo", "own": ["Jozef", "Miro"], "chips": [], "ctx": [{"q": "SHMÚ archívne dáta blokované pre tréning nowcastingu → plán B (Opera dáta, vlastný zber).", "who": "Q2 review / nowcasting", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}]}, {"id": "deleg", "num": "05", "title": "Delegované / sledovať", "track": true, "items": [{"t": "Chytiť Vicenzu — 2 demo miesta, osloviť partnera (Arrive)", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči"], ["src", "EU GTM"]], "ctx": [{"q": "Potrebujeme chytiť Vicenzu, povedať, kde sú dve miesta, kde to ukážeme, a potom osloviť partnera.", "who": "Janči", "src": "Porada · US parking", "loc": "00:00:52", "url": null}], "day": "10.7."}, {"t": "Upratať dizajn dashboardu (viac vzduchu, interaktivita, nudges)", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči + dizajn"]], "ctx": [{"q": "Chalanom som dal zadanie, aby to bolo vzdušnejšie a interaktívnejšie — tie nudges tam chýbali.", "who": "Janči", "src": "Porada · US parking", "loc": "00:12:25", "url": null}], "day": "10.7."}, {"t": "Poslať Jančimu „scrapenné“ app screeny (dizajn inšpirácia)", "d": "", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["when", "čo najskôr"]], "ctx": [{"q": "Objavil som projekt, kde máš skoro všetky aplikácie a všetky skríny — pošlem ti to, dá sa tým inšpirovať.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:10:48", "url": null}], "day": "10.7."}, {"t": "Overiť feedback na „Roxy“ (ex-Kamuš) + CEO Boat Around/Exponé", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči"]], "ctx": [{"q": "Spýtam sa chalanov, aký majú na ňu feedback — poznáme ju u Kamuša.", "who": "Janči", "src": "Porada · US parking", "loc": "00:33:53", "url": null}], "day": "10.7."}, {"t": "Otvoriť talk s telco operátormi — BTS dáta pre nowcasting", "d": "", "rail": "signal", "own": ["Pavol"], "chips": [["owner", "Pavol"], ["src", "Slack"]], "ctx": [{"q": "Cez uhorku otvoríme talk s operátormi. Beriem si to na starosť.", "who": "Pavol", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783689533370749"}], "day": "10.7."}, {"t": "Preveriť BTS metodiku (COST) + odborník na kalibráciu", "d": "", "rail": "signal", "own": ["Jozef"], "chips": [["owner", "Jozef Pecho"]], "ctx": [{"q": "Bude potrebné dáta správne kalibrovať a nájsť odborníka; skúsim nájsť metodiku z COST projektu.", "who": "Jozef Pecho", "src": "Slack · group DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/C0BGARJQPU3/p1783689338249759"}], "day": "10.7."}, {"t": "Technická časť UVO tenderu + kamery na 50 tokov", "d": "", "rail": "signal", "own": ["Ondrej"], "chips": [["owner", "Ondrej"], ["when", "→ 11.8."]], "ctx": [{"q": "Pozri technické a daj vedieť. Uzávierka 11.08.2026, 13:00.", "who": "Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D02STDT7QP4/p1783682272327089"}], "day": "10.7."}, {"t": "Sprocesovať objednávku ISO Elbacert (na podpis)", "d": "", "rail": "signal", "own": ["Katka"], "chips": [["owner", "Katka Škorcová"]], "ctx": [{"q": "Katka, prosím, sprocesuj. / OK, máš ready na stole na podpis.", "who": "Pavol / Katka", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f3d13ff33f6c19"}], "day": "10.7."}, {"t": "Uzavrieť starý spor (Kraubery) — vyrovnanie", "d": "", "rail": "signal", "own": ["Janči"], "chips": [["owner", "Janči"], ["when", "streda"]], "ctx": [{"q": "Obed v stredu; dohodnúť normálne vyrovnanie.", "who": "Janči / Pavol", "src": "Porada · US parking", "loc": "00:23:34", "url": null}], "day": "10.7."}, {"t": "Naplánovať trip do Číny (spojiť s návštevou pri Šanghaji)", "d": "", "rail": "signal", "own": ["Janči", "Pavol"], "chips": [["owner", "Janči + Pavol"], ["when", "~september"]], "ctx": [{"q": "Mali by sme naplánovať trip do Číny — dá sa spojiť s návštevou moderného mesta pri Šanghaji.", "who": "Pavol", "src": "Porada · US parking", "loc": "00:42:33", "url": null}], "day": "10.7."}, {"t": "Vlastný unikátny nowcasting model pred PL prezentáciou", "d": "", "rail": "signal", "own": ["Miro"], "chips": [["owner", "Miro"]], "ctx": [{"q": "Pred expanziou do Poľska priniesť vlastný unikátny model (nie open-source jadro).", "who": "Porada · Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "Stratégia regionálneho meteo + feasibility rámec pre parking", "d": "Prvý výstup pre Romana po nástupe.", "rail": "signal", "own": ["Roman"], "chips": [["owner", "Roman Cibulka"]], "ctx": [{"q": "Roman Cibulka dostáva ako prvý výstup spracovať stratégiu regionálneho meteo a feasibility rámec pre parking.", "who": "Porada · Financovanie/Go-to-market", "src": "Porada · 9.7.", "loc": "", "url": null}], "day": "9.7."}, {"t": "VUVH — výmena 12 senzorov + potvrdenie výhradného dodávateľa (Meratch)", "d": "", "rail": "signal", "own": ["Ondrej"], "chips": [["owner", "Tomáš Očenáš"], ["src", "Slack"]], "ctx": [{"q": "VUVH: riešime výmenu 12 ks — dodáme upravenú špecifikáciu + potvrdenie o výhradnom dodávateľovi Meratch, aby mohli kúpiť napriamo.", "who": "Tomáš Očenáš", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D0ACJMTUSVA/p1783614323419229"}], "day": "9.7."}]}, {"id": "quick", "num": "06", "title": "Rýchle vybavenie (< 5 min)", "track": true, "items": [{"t": "Anton — potvrdiť 3 úpravy v service agreemente", "d": "", "rail": "lo", "own": ["Pavol", "Anton"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Pavol, pridávam ťa, aby si potvrdil, čo upravíme.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}], "day": "10.7."}, {"t": "Elbacert objednávka ISO — podpísať, nechať Katke Š.", "d": "", "rail": "lo", "own": ["Pavol", "Katka"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Máš ready na stole na podpis, potom mi to nechaj na mojom stole.", "who": "Katka Škorcová", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f3d13ff33f6c19"}], "day": "10.7."}, {"t": "DNV — odpovedať o výpovedi 27001 k expirácii", "d": "", "rail": "lo", "own": ["Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "Dajte výpoveď k dátumu platnosti certifikátu (27001).", "who": "Milan Remiar", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19d961d5520f1c55"}], "day": "10.7."}, {"t": "FedEx — exportné colné vyhlásenie; prepošli logistike", "d": "", "rail": "lo", "own": ["Pavol"], "chips": [["src", "Gmail"]], "ctx": [{"q": "V prílohe sprievodný dokument pri vývoze a elektronické správy pre daňové účely.", "who": "FedEx (Jan Božik)", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4d107513134f1"}], "day": "10.7."}, {"t": "Maz — ULI: pozri e-mail, zladiť pricing pri prísľube objemu", "d": "", "rail": "lo", "own": ["Pavol", "Maz"], "chips": [["src", "Slack"]], "ctx": [{"q": "Check email please — Peter z ULI sľubuje veľký objem, ale chce rovnaké ceny. / Just replied.", "who": "Maz / Pavol", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D09RVF733PF/p1783670656542699"}], "day": "10.7."}, {"t": "Zuzana O. — prepošli upravenú personálnu maticu", "d": "", "rail": "lo", "own": ["Pavol"], "chips": [["src", "Slack"]], "ctx": [{"q": "Pali, príde dnes od PM ešte raz upravená personálna matica — len mi to prosím všetko prepošli.", "who": "Zuzana Olšová", "src": "Slack · DM", "loc": "", "url": "https://gospaceworkspacegroup.slack.com/archives/D098WHX852Q/p1783599536395019"}], "day": "9.7."}, {"t": "Prepošli FOTC / Websupport faktúry na invoices", "d": "", "rail": "lo", "own": ["Pavol", "Katka"], "chips": [["src", "Gmail"]], "ctx": [{"q": "FOTC faktúra (566,89 €, splatnosť 17.7.) preposlaná Katke na invoices.", "who": "Pavol → Katka", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f41719f6a89c1d"}], "day": "9.7."}]}, {"id": "radar", "num": "07", "title": "Radar termínov", "items": [{"t": "Po 13.7.", "d": "Podpis Roman Cibulka · Q3/Meratch sync · návrat Roman+Obermajer · príchod 3 000 Lora", "rail": "signal", "own": ["Pavol", "Miroslava"], "chips": [], "ctx": [{"q": "Pán Cibulka mi písal, že pracovné dokumenty vie podpísať v pondelok 13. júla 2026. Bude v BA, potom odlieta do Kanady a vracia sa až koncom augusta.", "who": "Miroslava Petríčková", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4720586bf2d92"}], "day": "10.7."}, {"t": "Ut 14.7.", "d": "EC Call for Evidence deadline · podpis Anton (service agreement)", "rail": "hi", "own": ["Pavol", "Anton"], "carry": "z 9.7.", "chips": [], "ctx": [{"q": "V utorok som pripravený podpísať — 3 veci ešte doladiť.", "who": "Anton Antonenko", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4cc41cd6c29d5"}, {"q": "EC Call for Evidence — deadline 14.7. (prenesené z 9.7.).", "who": "—", "src": "Prenos + Gmail (9.7.)", "loc": "", "url": null}], "day": "10.7."}, {"t": "Streda", "d": "Janči — obed k starému sporu (Kraubery)", "rail": "signal", "own": ["Janči"], "chips": [], "ctx": [{"q": "Budem mať obed v stredu…", "who": "Janči", "src": "Porada · US parking", "loc": "00:23:09", "url": null}], "day": "10.7."}, {"t": "Budúci týždeň", "d": "Call Vlado Hruda · call Miroslav Sopko · Miláno + Praha (~20.7.)", "rail": "signal", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Budúci týždeň s ním dohodnem call.", "who": "Pavol (o Vladovi Hrudovi)", "src": "Porada · US parking", "loc": "00:28:14", "url": null}, {"q": "Môžeme si budúci týždeň — ak nemáte dovolenku — spraviť online call.", "who": "Pavol (Sopkovi)", "src": "Porada · Ghostwriting", "loc": "00:05:18", "url": null}], "day": "10.7."}, {"t": "Št 17.7.", "d": "Splatnosť faktúry FOTC (566,89 €)", "rail": "signal", "own": ["Pavol", "Katka"], "chips": [], "ctx": [{"q": "Invoice GWS/2026/07/002673 for the amount of 566,89 EUR, which is due before 2026-07-17.", "who": "Fly on the Cloud (FOTC)", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f41719f6a89c1d"}], "day": "10.7."}, {"t": "Pi 24.7.", "d": "Validácia kontaktu domény fleximodo.online", "rail": "signal", "own": ["Pavol"], "chips": [], "ctx": [{"q": "Vzhľadom k registrácii domény fleximodo.online je nutné validovať správnosť údajov kontaktu držiteľa g-1596201, a to do 24.7.2026.", "who": "subreg.cz", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4732424be862b"}], "day": "10.7."}, {"t": "11.8. 13:00", "d": "Uzávierka UVO tenderu", "rail": "hi", "own": ["Ondrej"], "chips": [], "ctx": [{"q": "Uzávierka 11.08.2026, 13:00. Poďme to vyhrať.", "who": "Pavol", "src": "Slack · UVO tender", "loc": "", "url": "https://www.uvo.gov.sk/vyhladavanie/vyhladavanie-dokumentov/detail/3590589?cHash=ec03651395c23b51578a270a609d5a30"}], "day": "10.7."}, {"t": "~september", "d": "Nástup Roman + Sary (China office) · trip do Číny · EPA annual meeting", "rail": "signal", "own": ["Pavol", "Janči"], "chips": [], "ctx": [{"q": "Roman sa vracia z Kanady až koncom augusta (nástup 1.9.).", "who": "Miroslava Petríčková", "src": "Gmail · vlákno", "loc": "", "url": "https://mail.google.com/mail/u/0/#inbox/19f4720586bf2d92"}, {"q": "Sary otvára office v Číne, celý september je tam.", "who": "Janči", "src": "Porada · US parking", "loc": "00:41:59", "url": null}], "day": "10.7."}]}]};
+const SOURCES={"meetings":[],"slack":[],"gmail":[],"jira":[]};
 
-  function flat(){
-    var out=[];
-    state.sections.forEach(function(sec,si){
-      (sec.items||[]).forEach(function(it,ii){ out.push({it:it,sec:sec,si:si,ii:ii}); });
-    });
-    return out;
-  }
-  function owners(){
-    var set={};
-    flat().forEach(function(e){ (e.it.own||[]).forEach(function(o){ String(o).split(/[\/,]/).forEach(function(x){x=x.trim();if(x)set[x]=1;}); }); });
-    return Object.keys(set).sort();
-  }
-  function kcount(k){ return flat().filter(function(e){return k==="all"?true:e.it.list===k;}).length; }
+const ICONS={
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>',
+  caret:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+  bookmark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
+};
+const RAILS=[["signal","modrá"],["hi","červená · vysoká"],["mid","oranžová · stredná"],["lo","sivá · nízka"],["dec","fialová · rozhodnutie"],["win","zelená · win"]];
+const KINDLABEL={uloha:"úloha",napad:"nápad",poznamka:"poznámka"};
+const KINDRAIL={uloha:"signal",napad:"mid",poznamka:"dec"};
+let activeKind="all";
 
-  function matches(e){
-    if(kind!=="all" && e.it.list!==kind) return false;
-    if(status==="open" && e.it.done) return false;
-    if(status==="done" && !e.it.done) return false;
-    if(owner!=="all" && !((e.it.own||[]).join("/").indexOf(owner)>=0)) return false;
-    return true;
-  }
+function clone(o){return (typeof structuredClone==="function")?structuredClone(o):JSON.parse(JSON.stringify(o));}
+function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-  function setList(si,ii,k){
-    var it=state.sections[si].items[ii];
-    if(it.list===k) delete it.list; else it.list=k;
-    save(); render();
-  }
+let state=load()||clone(SEED);
+let editing=null, hideDone=false, drag=null, activeOwner="Všetci";
+let openCtx=new Set();
+const CURRENT_DAY="10.7."; let showAll=false;
+function dayVis(it){return showAll || (it.day||CURRENT_DAY)===CURRENT_DAY;}
+function setAll(v){showAll=v;document.getElementById("segCur").classList.toggle("on",!v);document.getElementById("segAll").classList.toggle("on",v);renderSources();render();}
 
-  function render(){
-    // filter chips
-    $("#kinds").innerHTML=KINDS.map(function(k){
-      var n=kcount(k[0]);
-      return '<button class="chip '+(kind===k[0]?"on":"")+'" data-k="'+k[0]+'">'+k[1]+
-        (k[0]!=="all"?' <span class="n">'+n+'</span>':'')+'</button>';
+function load(){try{const r=localStorage.getItem(STORE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+let savedT=null;
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));flash(true);}catch(e){flash(false);}}
+function flash(ok){const el=document.getElementById("saved");if(!ok){el.innerHTML='<span style="color:var(--threat)">⚠ použi Export</span>';return;}el.innerHTML="<b>✓ uložené</b>";clearTimeout(savedT);savedT=setTimeout(()=>{el.innerHTML="uložené";},1200);}
+
+function allOwners(){
+  const s=new Set();
+  state.sections.forEach(sec=>sec.items.forEach(it=>(it.own||[]).forEach(o=>s.add(o))));
+  return Array.from(s);
+}
+function visible(it){return activeOwner==="Všetci" || (it.own||[]).includes(activeOwner);}
+
+function renderFilter(){
+  const lc=k=>{let n=0;state.sections.forEach(s=>s.items.forEach(it=>{if(it.list===k)n++;}));return n;};
+  const lchips=[["all","Všetko"],["uloha","Úlohy"],["napad","Nápady"],["poznamka","Poznámky"]]
+    .map(k=>`<button class="ochip ${activeKind===k[0]?'on':''}" onclick="setKind('${k[0]}')">${k[1]}${k[0]!=='all'?`<span class="n">${lc(k[0])}</span>`:''}</button>`).join("");
+  const fb=document.getElementById("filterbar"); fb.style.display="";
+  fb.innerHTML=`<span class="flabel">Zoznam</span>${lchips}`;
+}
+function setOwner(o){activeOwner=o;renderFilter();render();}
+
+function render(){
+  const app=document.getElementById("app");
+  const listMode=activeKind!=="all";
+  const html=state.sections.map((sec,si)=>{
+    const showIt=it=>visible(it)&&(listMode?true:dayVis(it))&&(!listMode||it.list===activeKind);
+    const shownItems=sec.items.filter(showIt);
+    if(shownItems.length===0) return "";
+    const total=shownItems.length, done=shownItems.filter(x=>x.done).length;
+    const rows=sec.items.map((it,ii)=>{
+      if(!showIt(it)) return "";
+      if(editing&&editing.si===si&&editing.ii===ii) return editRow(sec,si,it,ii);
+      return itemRow(sec,si,it,ii,sec.items.length);
     }).join("");
-    $("#stats").innerHTML=STATUS.map(function(s){
-      return '<button class="chip '+(status===s[0]?"on":"")+'" data-s="'+s[0]+'">'+s[1]+'</button>';
-    }).join("");
-    $("#kinds").querySelectorAll(".chip").forEach(function(b){b.onclick=function(){kind=b.dataset.k;render();};});
-    $("#stats").querySelectorAll(".chip").forEach(function(b){b.onclick=function(){status=b.dataset.s;render();};});
+    return `<section>
+      <div class="sec-head"><span class="sec-num">${sec.num}</span><h2 class="sec-title">${esc(sec.title)}</h2>
+      <span class="sec-count">${sec.track?`${done}/${total} ✓`:`${total}`}</span>
+      <button class="add-btn" onclick="addItem(${si})">+ pridať</button></div>
+      <div class="card" data-si="${si}">${rows}</div>
+    </section>`;
+  }).join("");
+  app.innerHTML=html||`<section><div class="card"><div class="item"><div class="body"><p class="desc">${listMode?'V zozname zatiaľ nič nie je pre tento typ. Ulož ľubovoľnú položku ikonou záložky (medzi šípkami a ceruzkou) ako úlohu, nápad alebo poznámku.':'Žiadne položky.'}</p></div></div></div></section>`;
+  renderLog(); updateProgress(); bindDrag();
+}
+function setKind(k){activeKind=k;renderFilter();render();}
+let listMenu=null;
+function toggleListMenu(si,ii){const k=si+"-"+ii;listMenu=(listMenu===k)?null:k;render();}
+function closeListMenu(e){if(e&&e.stopPropagation)e.stopPropagation();listMenu=null;render();}
+function setList(si,ii,kind){const it=state.sections[si].items[ii];if(kind)it.list=kind;else delete it.list;listMenu=null;save();renderFilter();render();}
 
-    // owner select
-    var os=$("#owner");
-    if(os.dataset.built!=="1"){
-      os.innerHTML='<option value="all">Všetci</option>'+owners().map(function(o){return '<option>'+esc(o)+'</option>';}).join("");
-      os.dataset.built="1"; os.onchange=function(){owner=os.value;render();};
-    }
+function ctxHtml(it,key){
+  if(!it.ctx||!it.ctx.length) return "";
+  const open=openCtx.has(key);
+  const inner=it.ctx.map(c=>{
+    const link=c.url?`<a class="jump" href="${esc(c.url)}" target="_blank" rel="noopener">otvoriť zdroj ↗</a>`:"";
+    const loc=c.loc?`<span class="loc">${esc(c.loc)}</span>`:"";
+    return `<div class="quote"><p class="q">„${esc(c.q)}"</p><div class="attr"><span class="who">${esc(c.who)}</span><span>${esc(c.src)}</span>${loc}${link}</div></div>`;
+  }).join("");
+  return `<button class="ctx-toggle ${open?'open':''}" onclick="toggleCtx('${key}')"><span class="caret">${ICONS.caret}</span>kontext <span class="cnt">${it.ctx.length}</span></button>${open?`<div class="ctx">${inner}</div>`:""}`;
+}
+function toggleCtx(key){openCtx.has(key)?openCtx.delete(key):openCtx.add(key);render();}
 
-    var rows=flat().filter(matches);
-    $("#count").textContent=rows.length+" položiek"+(kind!=="all"||status!=="all"||owner!=="all"?" (filtrované)":" · celý archív");
-    if(!rows.length){ $("#list").innerHTML='<div class="empty">Nič nezodpovedá filtru. Polož­ky sa označujú tlačidlami Úloha / Nápad / Poznámka nižšie alebo v reporte.</div>'; return; }
+function itemRow(sec,si,it,ii,total){
+  if(hideDone&&it.done) return "";
+  const key=si+"-"+ii;
+  const old=(it.day||CURRENT_DAY)!==CURRENT_DAY;
+  const idx=sec.numbered?`<div class="idx">${ii+1}</div>`:"";
+  const chips=(it.chips||[]).map(c=>`<span class="chip ${c[0]}">${esc(c[1])}</span>`).join("");
+  const carry=it.carry?`<span class="carry">⟳ prenesené ${esc(it.carry)}</span>`:"";
+  const kind=it.list?`<span class="kchip ${it.list}">${KINDLABEL[it.list]||esc(it.list)}</span>`:"";
+  const daybadge=old?`<span class="daybadge">◷ ${esc(it.day)}</span>`:"";
+  const meta=chips?`<div class="meta">${chips}</div>`:"";
+  const desc=it.d?`<p class="desc">${esc(it.d)}</p>`:"";
+  const menu=(listMenu===key)?`<div class="menuscrim" onclick="closeListMenu(event)"></div><div class="listmenu"><div class="lmh">Uložiť do zoznamu</div><button class="lm uloha" onclick="setList(${si},${ii},'uloha')">úloha</button><button class="lm napad" onclick="setList(${si},${ii},'napad')">nápad</button><button class="lm poznamka" onclick="setList(${si},${ii},'poznamka')">poznámka</button>${it.list?`<button class="lm rm" onclick="setList(${si},${ii},null)">odobrať zo zoznamu</button>`:''}</div>`:'';
+  return `<div class="item ${it.done?'done':''} ${old?'old':''}" data-si="${si}" data-ii="${ii}" draggable="true">
+    <span class="handle" title="Ťahaj pre presun">⠿</span>
+    <div class="rail ${it.rail||'signal'}"></div>
+    <div class="check ${it.done?'on':''}" onclick="toggleDone(${si},${ii})" title="Hotové"></div>
+    ${idx}
+    <div class="body">
+      <div class="titleline"><p class="title">${esc(it.t)}</p>${kind}${daybadge}${carry}</div>
+      ${desc}${meta}${ctxHtml(it,key)}
+    </div>
+    <div class="ctrls">
+      <button class="ic" onclick="move(${si},${ii},-1)" ${ii===0?'disabled':''} title="Vyššie">${ICONS.up}</button>
+      <button class="ic" onclick="move(${si},${ii},1)" ${ii===total-1?'disabled':''} title="Nižšie">${ICONS.down}</button>
+      <button class="ic list ${it.list?'on '+it.list:''}" onclick="toggleListMenu(${si},${ii})" title="Uložiť do zoznamu — úloha / nápad / poznámka">${ICONS.bookmark}</button>
+      <button class="ic" onclick="startEdit(${si},${ii})" title="Upraviť">${ICONS.edit}</button>
+      <button class="ic del" onclick="del(${si},${ii})" title="Zmazať">${ICONS.del}</button>
+    </div>
+    ${menu}
+  </div>`;
+}
 
-    $("#list").innerHTML=rows.map(function(e){
-      var it=e.it, rail="r-"+(it.rail||"signal");
-      var day=it.day||"";
-      var sec=(e.sec.title||"").split("—")[0].trim();
-      var own=(it.own||[]).join(", ");
-      var doneBadge=it.done?'<span class="badge done">Hotové</span>':'<span class="badge open">Otvorené</span>';
-      var lks=[["uloha","Úloha"],["napad","Nápad"],["poznamka","Poznámka"]].map(function(k){
-        return '<button class="lk '+(it.list===k[0]?"on":"")+'" data-si="'+e.si+'" data-ii="'+e.ii+'" data-k="'+k[0]+'">'+k[1]+'</button>';
-      }).join("");
-      return '<div class="row '+rail+(it.done?" done":"")+'">'+
-        '<div class="rtop"><div class="rt">'+esc(it.t)+'</div>'+doneBadge+'</div>'+
-        (it.d?'<div class="rmeta" style="color:var(--ink-soft)">'+esc(it.d)+'</div>':'')+
-        '<div class="rmeta"><span class="day">'+esc(day)+'</span><span>'+esc(sec)+'</span>'+(own?'<span>'+esc(own)+'</span>':'')+'</div>'+
-        '<div class="tag"><span class="tl">uložiť do zoznamu</span>'+lks+'</div>'+
-      '</div>';
-    }).join("");
-    $("#list").querySelectorAll(".lk").forEach(function(b){
-      b.onclick=function(){ setList(+b.dataset.si,+b.dataset.ii,b.dataset.k); };
-    });
-  }
-  render();
-})();
+function editRow(sec,si,it,ii){
+  const opts=RAILS.map(r=>`<option value="${r[0]}" ${it.rail===r[0]?'selected':''}>${r[1]}</option>`).join("");
+  return `<div class="item"><div class="rail ${it.rail||'signal'}"></div>
+    <div class="edit">
+      <input class="t" id="ed-t" value="${esc(it.t).replace(/"/g,'&quot;')}" placeholder="Názov">
+      <textarea id="ed-d" rows="2" placeholder="Popis (nepovinné)">${esc(it.d||"")}</textarea>
+      <div class="erow"><label>Prúžok:</label><select id="ed-rail">${opts}</select>
+      <label>Vlastník:</label><input id="ed-own" style="width:180px;margin:0" value="${esc((it.own||[]).join(', ')).replace(/"/g,'&quot;')}" placeholder="napr. Pavol, Janči"></div>
+      <div class="ebtns"><button class="ebtn save" onclick="saveEdit(${si},${ii})">Uložiť</button><button class="ebtn" onclick="cancelEdit()">Zrušiť</button></div>
+    </div></div>`;
+}
+
+function toggleDone(si,ii){
+  const it=state.sections[si].items[ii];
+  it.done=!it.done;
+  if(it.done){it.doneAt=new Date().toISOString();it.doneDay=state.dayTitle;}
+  else{delete it.doneAt;delete it.doneDay;}
+  save();render();
+}
+function move(si,ii,dir){const a=state.sections[si].items,j=ii+dir;if(j<0||j>=a.length)return;[a[ii],a[j]]=[a[j],a[ii]];save();render();}
+function del(si,ii){const it=state.sections[si].items[ii];if(!confirm('Zmazať položku?\n\n„'+it.t+'"'))return;state.sections[si].items.splice(ii,1);if(editing&&editing.si===si)editing=null;save();render();}
+function addItem(si){state.sections[si].items.unshift({t:"Nová položka",d:"",done:false,rail:"signal",own:[],chips:[],day:CURRENT_DAY});editing={si,ii:0};render();const i=document.getElementById("ed-t");if(i){i.focus();i.select();}}
+function startEdit(si,ii){editing={si,ii};render();const i=document.getElementById("ed-t");if(i)i.focus();}
+function cancelEdit(){const s=state.sections[editing.si],it=s.items[editing.ii];if(it&&(!((it.t||"").trim())||it.t==="Nová položka")&&!it.d)s.items.splice(editing.ii,1);editing=null;render();}
+function saveEdit(si,ii){
+  const it=state.sections[si].items[ii];
+  it.t=(document.getElementById("ed-t").value.trim())||"(bez názvu)";
+  it.d=document.getElementById("ed-d").value.trim();
+  it.rail=document.getElementById("ed-rail").value;
+  it.own=document.getElementById("ed-own").value.split(",").map(s=>s.trim()).filter(Boolean);
+  editing=null;save();renderFilter();render();
+}
+
+function updateProgress(){
+  let d=0,t=0;
+  state.sections.forEach(s=>{if(s.track){s.items.forEach(it=>{if((it.day||CURRENT_DAY)===CURRENT_DAY){t++;if(it.done)d++;}});}});
+  const pct=t?Math.round(d/t*100):0;
+  document.getElementById("barFill").style.width=pct+"%";
+  document.getElementById("progLbl").textContent=`${d}/${t} akčných hotových (10.7.) · ${pct}%`;
+}
+
+function doneItems(){
+  const out=[];
+  state.sections.forEach(sec=>sec.items.forEach(it=>{if(it.done)out.push({sec:sec.title,it});}));
+  out.sort((a,b)=>String(a.it.doneAt||"").localeCompare(String(b.it.doneAt||"")));
+  return out;
+}
+function renderLog(){
+  const items=doneItems();
+  document.getElementById("logCnt").textContent=items.length?`· ${items.length}`:"· 0";
+  const list=document.getElementById("logList");
+  if(!items.length){list.innerHTML='<div class="empty">Zatiaľ nič odfajknuté. Čo označíš ako hotové, sa objaví tu.</div>';return;}
+  list.innerHTML=items.map(x=>{
+    const t=x.it.doneAt?new Date(x.it.doneAt):null;
+    const ts=t?`${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`:"—";
+    return `<div class="logrow"><span class="lt">${ts}</span><span class="lx"><b style="color:var(--ink)">${esc(x.it.t)}</b> <span style="color:var(--ink-faint)">· ${esc(x.sec)}</span></span></div>`;
+  }).join("");
+}
+
+function openRollup(){
+  const items=doneItems();
+  const byDay={};
+  items.forEach(x=>{const d=x.it.doneDay||state.dayTitle;(byDay[d]=byDay[d]||[]).push(x);});
+  let txt=`ROLL-UP — zavreté položky\n${"=".repeat(34)}\n`;
+  if(!items.length){txt+="\n(zatiaľ nič odfajknuté)\n";}
+  Object.keys(byDay).forEach(day=>{
+    txt+=`\n${day}  (${byDay[day].length})\n`;
+    byDay[day].forEach(x=>{txt+=`  ✓ ${x.it.t}  — ${x.sec}\n`;});
+  });
+  const open=[];
+  state.sections.forEach(s=>{if(s.track)s.items.forEach(it=>{if(!it.done)open.push(it.t);});});
+  txt+=`\n${"-".repeat(34)}\nEŠTE OTVORENÉ (akčné): ${open.length}\n`;
+  open.slice(0,12).forEach(t=>{txt+=`  □ ${t}\n`;});
+  document.getElementById("rollText").value=txt;
+  document.getElementById("modal").classList.add("on");
+}
+function closeModal(){document.getElementById("modal").classList.remove("on");}
+function copyRollup(btn){const ta=document.getElementById("rollText");ta.select();try{document.execCommand("copy");}catch(e){}try{navigator.clipboard.writeText(ta.value);}catch(e){}btn.textContent="Skopírované ✓";setTimeout(()=>{btn.textContent="Kopírovať";},1400);}
+
+function bindDrag(){
+  document.querySelectorAll('.item[draggable="true"]').forEach(el=>{
+    el.addEventListener('dragstart',e=>{drag={si:+el.dataset.si,ii:+el.dataset.ii};el.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));});
+    el.addEventListener('dragover',e=>{e.preventDefault();if(drag&&+el.dataset.si===drag.si)el.classList.add('drop-target');});
+    el.addEventListener('dragleave',()=>el.classList.remove('drop-target'));
+    el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drop-target');if(!drag)return;const si=+el.dataset.si,ti=+el.dataset.ii;if(si!==drag.si)return;const a=state.sections[si].items;const[m]=a.splice(drag.ii,1);a.splice(ti,0,m);drag=null;save();render();});
+  });
+}
+
+function toggleHideDone(btn){hideDone=!hideDone;btn.textContent=hideDone?"Zobraziť hotové":"Skryť hotové";render();}
+
+function bindText(){
+  const dt=document.getElementById("dayTitle"),pt=document.getElementById("pulseText"),ht=document.getElementById("humanText");
+  dt.textContent=state.dayTitle||"";pt.textContent=state.pulse||"";ht.textContent=state.human||"";
+  dt.addEventListener('blur',()=>{state.dayTitle=dt.textContent.trim();save();});
+  pt.addEventListener('blur',()=>{state.pulse=pt.textContent.trim();save();});
+  ht.addEventListener('blur',()=>{state.human=ht.textContent.trim();save();});
+}
+
+function doExport(){const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="vyhodnotenie-"+(state.dayTitle||"den").replace(/[^\wa-zA-Z0-9]+/g,"-").toLowerCase()+".json";a.click();URL.revokeObjectURL(a.href);}
+function doImport(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);editing=null;openCtx.clear();activeOwner="Všetci";save();bindText();renderFilter();render();}catch(e){alert("Nepodarilo sa načítať súbor.");}};r.readAsText(f);ev.target.value="";}
+function doReset(){if(!confirm("Vrátiť pôvodné znenie? Tvoje úpravy sa stratia."))return;state=clone(SEED);editing=null;openCtx.clear();activeOwner="Všetci";bindText();renderFilter();save();render();}
+
+function renderSources(){
+  const S=SOURCES; if(!S) return;
+  const p0=document.querySelector('.srcpanel'); const wasOpen=p0?p0.open:false;
+  const meetings=S.meetings.filter(m=>dayVis(m));
+  const slack=S.slack.filter(x=>dayVis(x));
+  const gmail=S.gmail.filter(x=>dayVis(x));
+  const jira=S.jira.filter(x=>dayVis(x));
+  const nM=meetings.length, nO=slack.length+gmail.length+jira.length;
+  const scope=showAll?"všetky dni":"len 10.7.";
+  const mtgs=meetings.map(m=>{
+    const dcls=m.day===CURRENT_DAY?'d1':'d0';
+    const info=[m.date,m.part].filter(Boolean).join(' · ');
+    return `<details class="mtg"><summary><span class="mday ${dcls}">${esc(m.day)}</span><span class="tri">${ICONS.caret}</span><span class="mttl">${esc(m.title)}</span>${m.dur?`<span class="mdur">${esc(m.dur)}</span>`:''}</summary>${info?`<div class="minfo">${esc(info)}</div>`:''}<div class="tr">${esc(m.transcript)}</div></details>`;
+  }).join("");
+  const list=(arr,cls,kl)=>`<ul class="srclist">`+arr.map(x=>{
+    const t=x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label)} ↗</a>`:`<span class="plain">${esc(x.label)}</span>`;
+    return `<li><span class="k ${cls}">${kl}</span>${t}</li>`;
+  }).join("")+`</ul>`;
+  const grp=(arr,cls,kl,title)=>arr.length?`<div class="srcgroup"><h4>${title} — ${arr.length}</h4>${list(arr,cls,kl)}</div>`:"";
+  document.getElementById("sources").innerHTML=`<details class="srcpanel"${wasOpen?' open':''}>
+    <summary><span class="tri">${ICONS.caret}</span>Podklady &amp; pokrytie<span class="scnt">${scope} · ${nM} porád · ${nO} ďalších zdrojov</span></summary>
+    <div class="srcbody">
+      ${meetings.length?`<div class="srcgroup"><h4>Porady &amp; synced — ${nM} · rozklikni = celý prepis</h4>${mtgs}</div>`:""}
+      ${grp(slack,'sl','Slack','Slack')}
+      ${grp(gmail,'gm','Gmail','Gmail')}
+      ${grp(jira,'jr','Jira','Jira')}
+    </div>
+  </details>`;
+}
+
+bindText();renderSources();renderFilter();setAll(true);flash(true);
 </script>
 </body>
 </html>
