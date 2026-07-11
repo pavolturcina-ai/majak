@@ -83,8 +83,11 @@ Implementácia `fetch_since` je pripravená ako seam v `src/majak/connectors/`.
 ## 6. Napojenie frontendu (Pages) na živé API — voliteľné
 
 Report/Zoznam/Osoby zatiaľ bežia nad embedded `SEED`. Keď chceš živé dáta z DB:
-- V **Import** stránke (`/import.html`) nastav *API base* na
-  `https://majak-api.onrender.com/api` + token — vstupy pôjdu rovno do pipeline.
+- Nastav `APP_TOKEN` v `majak-secrets` (dlhý náhodný reťazec) — zdieľaný bearer
+  pre single-user frontend (funguje aj popri Supabase JWT, bez login flow).
+- V **Import** stránke (`/import.html`) je *API base* predvyplnená na
+  `https://majak-api.onrender.com/api`; do poľa **Token** vlož `APP_TOKEN` a Ulož.
+  Manuálne vstupy potom idú rovno do pipeline v DB.
 - Report neskôr prepneme z `const SEED` na `fetch('/api/days/current')`
   (Phase-1 adaptér `frontend/api.js` je pripravený).
 

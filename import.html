@@ -225,6 +225,8 @@
 (function(){
   "use strict";
   var LS_API="majak.apiBase", LS_TOK="majak.token", LS_Q="majak.inputQueue";
+  // Live API by default (override in "Nastavenie API"). Not a secret.
+  var DEFAULT_API="https://majak-api.onrender.com/api";
   var $=function(s){return document.querySelector(s)};
 
   // ---- deň: default najbližší pracovný deň ----
@@ -256,9 +258,9 @@
   });
 
   // ---- API settings ----
-  function apiBase(){return (localStorage.getItem(LS_API)||"").replace(/\/$/,"")}
+  function apiBase(){return (localStorage.getItem(LS_API)||DEFAULT_API).replace(/\/$/,"")}
   function token(){return localStorage.getItem(LS_TOK)||""}
-  $("#apiBase").value=localStorage.getItem(LS_API)||"";
+  $("#apiBase").value=localStorage.getItem(LS_API)||DEFAULT_API;
   $("#token").value=token();
   $("#saveApi").onclick=function(){
     localStorage.setItem(LS_API,$("#apiBase").value.trim());

@@ -8,6 +8,7 @@ token equal to the cron secret is accepted so the app is usable locally.
 from __future__ import annotations
 
 import logging
+import secrets
 from collections.abc import AsyncIterator
 
 from fastapi import Depends, Header, HTTPException, status
@@ -32,11 +33,16 @@ class Principal:
 async def current_user(authorization: str | None = Header(default=None)) -> Principal:
     token = _bearer(authorization)
 
+    # Shared app token — single-user personal auth for the hosted frontend.
+    # Works even when a Supabase JWT secret is configured (no login flow needed).
+    if settings.app_token and token and secrets.compare_digest(token, settings.app_token):
+        return Principal(email=settings.auth_single_user_email)
+
     # Dev fallback: allow the cron/dev secret when JWT verification isn't set up.
     if not settings.supabase_jwt_secret:
         if token and token == settings.cron_secret:
             return Principal(email=settings.auth_single_user_email)
-        raise _unauthorized("JWT secret not configured; present the dev token")
+        raise _unauthorized("JWT secret not configured; present the app or dev token")
 
     email = _verify_jwt(token)
     if email is None or email.lower() != settings.auth_single_user_email.lower():

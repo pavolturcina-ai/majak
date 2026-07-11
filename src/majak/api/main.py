@@ -27,11 +27,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# The Phase-1 HTML frontend is a thin client on the same origin or localhost.
+# The Phase-1 HTML frontend (GitHub Pages) is a token-authenticated thin client.
+# Auth is a Bearer header (not cookies), so credentials aren't needed — which lets
+# us keep permissive origins (wildcard + credentials is invalid per the CORS spec).
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

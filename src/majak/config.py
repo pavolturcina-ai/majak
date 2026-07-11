@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     notify_target: str = "pavol.turcina@gospace.tech"
     # Shared secret the pg_cron / edge-function caller presents to /scheduler/*.
     cron_secret: str = "dev-cron-secret"
+    # Shared bearer token for the single user's frontend (works alongside JWT).
+    # Set this to let the hosted report/import authenticate without a login flow.
+    app_token: str = ""
 
     # ── People resolution thresholds ─────────────────────────────────────────
     person_match_link: float = Field(default=0.92, ge=0, le=1)

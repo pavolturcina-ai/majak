@@ -23,6 +23,8 @@ envVarGroups:
         sync: false
       - key: CRON_SECRET           # shared bearer for /scheduler/* endpoints
         sync: false
+      - key: APP_TOKEN             # shared bearer for the single-user frontend
+        sync: false
       # ── Connectors (optional; no-op until set) ──
       - key: GMAIL_CLIENT_ID
         sync: false
