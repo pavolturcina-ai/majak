@@ -11,11 +11,13 @@ Tri bežiace časti: **Supabase** (databáza), **Render web service** (API),
 ## 1. Supabase (databáza) — ~5 min
 
 1. Vytvor projekt na [supabase.com](https://supabase.com) (free tier stačí na štart).
-2. **Project Settings → Database → Connection string → URI** — skopíruj *Direct
-   connection* (port `5432`). Prepíš prefix na asyncpg:
+2. Klikni hore **Connect → Connection String → URI** a vyber **Session pooler**
+   (port `5432`, IPv4). Prepíš prefix na asyncpg:
    `postgresql://…` → `postgresql+asyncpg://…`. To je tvoj `DATABASE_URL`.
-   - ⚠️ Nepoužívaj *Transaction pooler* (`6543`) — rozbíja prepared statements.
-   - Heslo so špeciálnymi znakmi URL-encode.
+   - ✅ **Session pooler** (5432) — funguje z Render (IPv4) a podporuje prepared statements.
+   - ⚠️ **Direct connection** (`db.<ref>.supabase.co`) je na free tieri **len IPv6** → z Render sa nedovolá.
+   - ⚠️ **Transaction pooler** (`6543`) — rozbíja prepared statements, nepoužívaj.
+   - Meno používateľa je `postgres.<project-ref>`. Heslo so špeciálnymi znakmi URL-encode.
 3. **Project Settings → API** — skopíruj `SUPABASE_URL`, `service_role` kľúč
    (`SUPABASE_SERVICE_KEY`) a **JWT Secret** (`SUPABASE_JWT_SECRET`).
 

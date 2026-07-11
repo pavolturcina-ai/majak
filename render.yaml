@@ -10,7 +10,8 @@ envVarGroups:
   - name: majak-secrets
     envVars:
       # ── Set these in the Render dashboard (never commit real values) ──
-      - key: DATABASE_URL          # postgresql+asyncpg://...supabase...:5432/postgres
+      # Supabase Session pooler URI (IPv4, 5432), asyncpg driver. See DEPLOY.md.
+      - key: DATABASE_URL          # postgresql+asyncpg://postgres.<ref>:<pw>@aws-0-<region>.pooler.supabase.com:5432/postgres
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
