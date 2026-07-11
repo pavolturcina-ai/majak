@@ -235,25 +235,31 @@
 </head>
 <body>
 
-<div class="majak-xnav">
-  <a class="mx-logo" href="./index.html">◎ MAJÁK</a>
-  <nav>
-    <a href="./index.html">Hub</a>
-    <a href="./report.html" class="on">Report</a>
-    <a href="./import.html">Import</a>
-    <a href="./zoznam.html">Zoznam</a>
-  </nav>
+<div class="mjk-top">
+  <div class="mjk-in">
+    <a class="mjk-logo" href="./index.html"><span class="mjk-beacon" aria-hidden="true"></span><b>MAJÁK</b></a>
+    <nav class="mjk-nav">
+      <a href="./index.html">Hub</a>
+      <a href="./report.html" class="active" aria-current="page">Report</a>
+      <a href="./import.html">Import</a>
+      <a href="./zoznam.html">Zoznam</a>
+    </nav>
+  </div>
 </div>
 <style>
-.majak-xnav{display:flex;align-items:center;gap:14px;padding:8px 20px;background:var(--card);
-  border-bottom:1px solid var(--line);font-family:"Inter",system-ui,sans-serif}
-.majak-xnav .mx-logo{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:.14em;
-  font-size:13px;color:var(--signal);text-decoration:none;white-space:nowrap}
-.majak-xnav nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
-.majak-xnav nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:5px 11px;border-radius:8px}
-.majak-xnav nav a:hover{background:var(--signal-tint);color:var(--signal)}
-.majak-xnav nav a.on{background:var(--signal);color:#fff}
-@media print{.majak-xnav{display:none!important}}
+/* Shared MAJÁK cross-page menu — matches the Hub / Import / Zoznam nav. */
+.mjk-top{background:var(--card);border-bottom:1px solid var(--line);font-family:"Inter",system-ui,-apple-system,sans-serif}
+.mjk-in{max-width:980px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:14px}
+.mjk-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.mjk-logo b{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:.16em;font-size:15px}
+.mjk-beacon{width:26px;height:26px;border-radius:7px;flex:none;border:1px solid var(--line);position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 32%,var(--signal) 0 26%,transparent 27%),
+  conic-gradient(from -34deg at 50% 36%,transparent 0 61%,color-mix(in srgb,var(--signal) 34%,transparent) 61% 75%,transparent 75%),var(--card)}
+.mjk-nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.mjk-nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:6px 11px;border-radius:8px}
+.mjk-nav a:hover{background:var(--signal-tint);color:var(--signal)}
+.mjk-nav a.active{background:var(--signal);color:#fff}
+@media print{.mjk-top{display:none!important}}
 </style>
 
 <div class="toolbar">
