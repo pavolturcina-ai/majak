@@ -22,14 +22,14 @@ class Settings(BaseSettings):
     claude_model_synth: str = "claude-opus-4-1"
     claude_model_vision: str = "claude-sonnet-4-5"
 
-    # ── Supabase ─────────────────────────────────────────────────────────────
+    # ── Supabase ─────────────────────────────────────────────────────────
     supabase_url: str = ""
     supabase_service_key: str = ""
     database_url: str = "postgresql+asyncpg://postgres:postgres@127.0.0.1:54322/postgres"
     supabase_storage_bucket: str = "majak-sources"
     supabase_jwt_secret: str = ""
 
-    # ── Auth ─────────────────────────────────────────────────────────────────
+    # ── Auth ─────────────────────────────────────────────────────────────
     auth_single_user_email: str = "pavol.turcina@gospace.tech"
 
     # ── Connectors ───────────────────────────────────────────────────────────
@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     gmail_client_secret: str = ""
     gmail_refresh_token: str = ""
     slack_bot_token: str = ""
+    slack_user_token: str = ""
     slack_app_token: str = ""
     fathom_api_key: str = ""
     gcal_client_id: str = ""
@@ -55,7 +56,7 @@ class Settings(BaseSettings):
     # Set this to let the hosted report/import authenticate without a login flow.
     app_token: str = ""
 
-    # ── People resolution thresholds ─────────────────────────────────────────
+    # ── People resolution thresholds ────────────────────────────────────────
     person_match_link: float = Field(default=0.92, ge=0, le=1)
     person_match_review: float = Field(default=0.75, ge=0, le=1)
 
