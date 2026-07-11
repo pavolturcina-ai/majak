@@ -32,9 +32,13 @@ def collapse_whitespace(value: str) -> str:
 
 
 def clean_text(value: str) -> str:
-    """Normalize newlines and trim trailing whitespace on each line."""
+    """Normalize newlines, collapse intra-line whitespace, trim each line.
+
+    Preserves paragraph structure (single blank lines) while removing the ragged
+    spacing typical of HTML/PDF/transcript exports.
+    """
     value = value.replace("\r\n", "\n").replace("\r", "\n")
-    lines = [line.rstrip() for line in value.split("\n")]
+    lines = [collapse_whitespace(line) for line in value.split("\n")]
     # Collapse 3+ blank lines to a single blank line.
     out: list[str] = []
     blank = 0

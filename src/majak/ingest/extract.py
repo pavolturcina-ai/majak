@@ -148,7 +148,7 @@ def _candidate_lines(norm: NormalizedInput) -> list[tuple[str | None, str | None
 def _titleize(line: str) -> str:
     line = re.sub(r"^\[?[\d:]+\]?\s*", "", line)  # drop leading timestamp
     line = re.sub(r"^[A-ZÀ-ž][\w .'-]{1,40}:\s*", "", line)  # drop leading speaker
-    return line.strip()[:120] or line.strip()[:120]
+    return line.strip()[:120]
 
 
 def _dedupe(units: list[ExtractedUnit]) -> list[ExtractedUnit]:
