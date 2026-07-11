@@ -17,14 +17,26 @@ pytestmark = pytest.mark.db
 TEST_DB = os.getenv("TEST_DATABASE_URL")
 
 
+_DATA_TABLES = (
+    "item_events, item_people, item_sources, item_embeddings, items, "
+    "source_chunks, source_participants, source_files, sources, "
+    "person_aliases, review_queue, people, days, sync_state, extraction_hints"
+)
+
+
 @pytest.fixture
 async def session():
     if not TEST_DB:
         pytest.skip("Set TEST_DATABASE_URL to run DB integration tests")
+    from sqlalchemy import text
     from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
     engine = create_async_engine(TEST_DB)
     maker = async_sessionmaker(engine, expire_on_commit=False)
+    # Isolate each test: start from a clean, dedicated test database.
+    async with maker() as s:
+        await s.execute(text(f"truncate {_DATA_TABLES} restart identity cascade"))
+        await s.commit()
     async with maker() as s:
         yield s
         await s.rollback()
@@ -71,10 +83,12 @@ async def test_carry_chain_preserves_true_origin(session):
 
 
 async def test_delete_requires_reason(session):
-    from majak.day.lifecycle import set_status
+    from majak.day.lifecycle import ensure_day, set_status
     from majak.models.tables import Item
 
-    item = Item(entered_day=date(2025, 7, 9), section="top", title="X", status="open")
+    d = date(2025, 7, 9)
+    await ensure_day(session, d, status="open")
+    item = Item(entered_day=d, section="top", title="X", status="open")
     session.add(item)
     await session.flush()
 

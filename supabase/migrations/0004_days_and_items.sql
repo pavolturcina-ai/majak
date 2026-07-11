@@ -38,14 +38,16 @@ create index items_section_idx on items (section);
 create index items_carry_from_idx on items (carry_from);
 
 -- Grounding: every item traces to its source(s) with an exact quote.
--- locator is coalesced into the PK so a null locator still yields a stable key.
+-- locator defaults to '' (never null) so it can be part of a plain composite PK
+-- — the same (item, source) can be grounded at multiple locators (e.g. two
+-- transcript timestamps) without collision.
 create table item_sources (
   item_id    uuid not null references items(id) on delete cascade,
   source_id  uuid not null references sources(id),
   quote      text,
-  locator    text,                                     -- transcript timestamp / message link
+  locator    text not null default '',                 -- transcript timestamp / message link
   url        text,
-  primary key (item_id, source_id, (coalesce(locator, '')))
+  primary key (item_id, source_id, locator)
 );
 
 create table item_people (
