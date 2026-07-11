@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAJÁK — dokumentácia & architektúra</title>
+<meta name="description" content="MAJÁK — osobný CEO asistent. Prehľad, fork → import, architektúra agenta, schéma DB a všetko potrebné na vylepšovanie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f8f6;--card:#ffffff;--card-2:#fbfcfa;--ink:#151a1d;--ink-soft:#4a555b;--ink-faint:#8b969b;
+    --line:#e5e8e4;--line-soft:#eef1ee;--signal:#0e6b7a;--signal-tint:#e6f1f2;--signal-deep:#0a4f5a;
+    --win:#1f8a54;--warn:#b26a00;--threat:#c0392b;--decision:#5b3d8f;--carry:#8a6d1f;--carry-tint:#faf3dd;
+    --radius:14px;--shadow:0 1px 2px rgba(20,26,29,.04),0 6px 22px rgba(20,26,29,.05);
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --disp:"Space Grotesk",var(--sans);--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --paper:#0f1413;--card:#161d1c;--card-2:#131a19;--ink:#e7ece9;--ink-soft:#9aa6a1;--ink-faint:#6c7a74;
+    --line:#27302d;--line-soft:#1e2624;--signal:#3fa9bb;--signal-tint:#123030;--signal-deep:#5cc0d0;
+    --win:#48b57a;--warn:#d29a3e;--threat:#e0685c;--decision:#a488d6;--carry:#c9a94e;--carry-tint:#2a2413;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32);}}
+  :root[data-theme="dark"]{
+    --paper:#0f1413;--card:#161d1c;--card-2:#131a19;--ink:#e7ece9;--ink-soft:#9aa6a1;--ink-faint:#6c7a74;
+    --line:#27302d;--line-soft:#1e2624;--signal:#3fa9bb;--signal-tint:#123030;--signal-deep:#5cc0d0;
+    --win:#48b57a;--warn:#d29a3e;--threat:#e0685c;--decision:#a488d6;--carry:#c9a94e;--carry-tint:#2a2413;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32);}
+  :root[data-theme="light"]{
+    --paper:#f7f8f6;--card:#fff;--card-2:#fbfcfa;--ink:#151a1d;--ink-soft:#4a555b;--ink-faint:#8b969b;
+    --line:#e5e8e4;--line-soft:#eef1ee;--signal:#0e6b7a;--signal-tint:#e6f1f2;--signal-deep:#0a4f5a;
+    --win:#1f8a54;--warn:#b26a00;--threat:#c0392b;--decision:#5b3d8f;--carry:#8a6d1f;--carry-tint:#faf3dd;
+    --shadow:0 1px 2px rgba(20,26,29,.04),0 6px 22px rgba(20,26,29,.05);}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+  /* Top bar */
+  .top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .top .in{max-width:1080px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:14px;}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);}
+  .beacon{width:26px;height:26px;border-radius:7px;flex:none;border:1px solid var(--line);position:relative;overflow:hidden;
+    background:radial-gradient(circle at 50% 32%,var(--signal) 0 26%,transparent 27%),
+    conic-gradient(from -34deg at 50% 36%,transparent 0 61%,color-mix(in srgb,var(--signal) 34%,transparent) 61% 75%,transparent 75%),var(--card);}
+  .logo b{font-family:var(--disp);font-weight:700;letter-spacing:.16em;font-size:15px}
+  .nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+  .nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:6px 11px;border-radius:8px}
+  .nav a:hover{background:var(--signal-tint);color:var(--signal-deep)}
+  .nav a.cta{background:var(--signal);color:#fff}
+  .nav a.cta:hover{background:var(--signal-deep);color:#fff}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* Hero */
+  .hero{padding:56px 0 34px;border-bottom:1px solid var(--line-soft)}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--signal);font-weight:500;margin-bottom:14px}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.05;letter-spacing:-.025em;margin:0 0 16px;max-width:16ch;text-wrap:balance}
+  .lead{font-size:18px;color:var(--ink-soft);max-width:62ch;margin:0 0 24px}
+  .lead b{color:var(--ink)}
+  .herobtns{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{font-size:14px;font-weight:500;text-decoration:none;border-radius:9px;padding:9px 15px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);color:var(--ink);background:var(--card)}
+  .btn:hover{border-color:var(--signal);color:var(--signal-deep)}
+  .btn.primary{background:var(--signal);color:#fff;border-color:var(--signal)}
+  .btn.primary:hover{background:var(--signal-deep);color:#fff}
+
+  section{padding:44px 0;border-bottom:1px solid var(--line-soft)}
+  .sec-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .sec-eyebrow .n{color:var(--signal);font-weight:500}
+  h2{font-family:var(--disp);font-weight:600;font-size:26px;letter-spacing:-.015em;margin:0 0 18px;text-wrap:balance}
+  h3{font-family:var(--disp);font-weight:600;font-size:16px;margin:26px 0 10px}
+  p{margin:0 0 14px;max-width:70ch}
+  a{color:var(--signal-deep)}
+
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:17px 18px;box-shadow:var(--shadow)}
+  .card h3{margin-top:0}
+  .card .k{font-family:var(--mono);font-size:11px;color:var(--signal);letter-spacing:.05em;text-transform:uppercase}
+
+  ul.clean{margin:0;padding-left:20px}
+  ul.clean li{margin:5px 0}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:20px;background:var(--signal-tint);color:var(--signal-deep);border:1px solid color-mix(in srgb,var(--signal) 25%,var(--line))}
+
+  /* code blocks */
+  pre{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--signal);border-radius:10px;padding:14px 16px;overflow-x:auto;box-shadow:var(--shadow);margin:0 0 14px}
+  code{font-family:var(--mono);font-size:12.5px}
+  pre code{color:var(--ink)}
+  .cmt{color:var(--ink-faint)}
+  .tok{color:var(--signal-deep)}
+  p code,li code,td code{font-family:var(--mono);font-size:12px;background:var(--signal-tint);color:var(--signal-deep);padding:1px 6px;border-radius:5px}
+
+  /* pipeline */
+  .pipe{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:6px 0 8px}
+  .step{flex:1 1 118px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 12px;position:relative;box-shadow:var(--shadow)}
+  .step .num{font-family:var(--mono);font-size:10.5px;color:var(--signal);font-weight:500}
+  .step .nm{font-family:var(--disp);font-weight:600;font-size:14px;margin:2px 0 3px}
+  .step .ds{font-size:12px;color:var(--ink-soft);line-height:1.4}
+
+  /* module tree */
+  .tree{font-family:var(--mono);font-size:12.5px;line-height:1.85;color:var(--ink-soft);white-space:pre;overflow-x:auto}
+  .tree b{color:var(--ink);font-weight:500}
+  .tree .c{color:var(--ink-faint)}
+
+  /* schema tables */
+  .schema{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .tbl{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .tbl .h{background:var(--signal);color:#fff;font-family:var(--mono);font-size:12.5px;padding:8px 12px;letter-spacing:.03em;display:flex;justify-content:space-between}
+  .tbl .h .cnt{opacity:.8;font-size:11px}
+  .tbl ul{list-style:none;margin:0;padding:8px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-soft)}
+  .tbl li{padding:2px 0;display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line-soft)}
+  .tbl li:last-child{border-bottom:0}
+  .tbl li .t{color:var(--ink-faint)}
+  .tbl li .pk{color:var(--signal);font-weight:500}
+  .tbl li .fk{color:var(--warn)}
+
+  table.matrix{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 8px}
+  table.matrix th,table.matrix td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.matrix th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:500}
+  table.matrix td code{font-size:11.5px}
+
+  .callout{background:var(--card-2);border:1px solid var(--line);border-left:3px solid var(--carry);border-radius:10px;padding:13px 15px;margin:14px 0;font-size:14px;color:var(--ink-soft)}
+  .callout.warn{border-left-color:var(--threat)}
+  .callout b{color:var(--ink)}
+
+  footer{padding:34px 0 60px;color:var(--ink-faint);font-size:13px}
+  footer a{color:var(--ink-soft)}
+  .foot-links{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:5px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="in">
+    <a class="logo" href="#top"><span class="beacon" aria-hidden="true"></span><b>MAJÁK</b></a>
+    <nav class="nav">
+      <a href="#prehlad">Prehľad</a>
+      <a href="#import">Fork → Import</a>
+      <a href="#architektura">Architektúra</a>
+      <a href="#vylepsovat">Kde vylepšovať</a>
+      <a href="./report.html" class="cta">Report →</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap" id="top">
+  <header class="hero">
+    <div class="eyebrow">Osobný CEO asistent · dokumentácia</div>
+    <h1>MAJÁK vidí každý deň jasne.</h1>
+    <p class="lead">Prijíma denné vstupy (prepisy, Gmail, Slack, Fathom, kalendár), <b>rozpozná ľudí</b>,
+      vytiahne štruktúrované <b>uzemnené</b> vyhodnotenie, sleduje životný cyklus každej položky naprieč
+      dňami a učí sa z tvojich úprav. Dva plánované behy (18:00 zavretie + 04:00 doplnenie) držia deň sviežy.</p>
+    <div class="herobtns">
+      <a class="btn primary" href="./report.html">Otvoriť report (10.7.)</a>
+      <a class="btn" href="https://github.com/pavolturcina-ai/majak" target="_blank" rel="noopener">GitHub repo</a>
+      <a class="btn" href="https://github.com/pavolturcina-ai/majak/pull/1" target="_blank" rel="noopener">Pull Request #1</a>
+    </div>
+  </header>
+
+  <!-- PREHĽAD -->
+  <section id="prehlad">
+    <div class="sec-eyebrow"><span class="n">01</span> Prehľad</div>
+    <h2>Čo MAJÁK robí</h2>
+    <p>Každý vstup — plánovaný z konektora, alebo manuálny (text/súbor/obrázok) — prejde <b>rovnakou
+      8-krokovou pipeline</b> a skončí ako uzemnené položky v konkrétnom dni. Nič sa nevymýšľa, nič sa
+      tvrdo nemaže, ľudia sa nikdy potichu nezlučujú.</p>
+
+    <div class="grid g2" style="margin:18px 0">
+      <div class="card">
+        <div class="k">18:00 · zavri & otvor zajtra</div>
+        <h3>close_and_open_tomorrow</h3>
+        <p style="margin:0;font-size:14px;color:var(--ink-soft)">Finalizuje dnešok (snapshot + roll-up,
+          <code>closed</code>), otvorí zajtrajšok, prenesie nedokončené položky (carry-over) a natiahne
+          zajtrajší kalendár → radar + dossiere účastníkov.</p>
+      </div>
+      <div class="card">
+        <div class="k">04:00 · doplň noc</div>
+        <h3>fill_overnight</h3>
+        <p style="margin:0;font-size:14px;color:var(--ink-soft)">Pre každý konektor <code>fetch_since(cursor)</code>
+          → pipeline → znovu poskladá otvorený deň → pošle notifikáciu, že brief je hotový. Keď sa o 04:00
+          zobudíš, deň je kompletný.</p>
+      </div>
+    </div>
+
+    <h3>Nemenné pravidlá (guardrails)</h3>
+    <div class="grid g2">
+      <ul class="clean">
+        <li><b>Uzemnenie:</b> každá položka má doslovný citát + lokátor + zdroj.</li>
+        <li><b>Žiadne tvrdé mazanie:</b> soft-delete + archív; zdroje navždy.</li>
+      </ul>
+      <ul class="clean">
+        <li><b>Žiadne potichu zlúčené osoby:</b> neistota ide do review queue.</li>
+        <li><b>Idempotentný sync:</b> dedup cez <code>(connector, external_id)</code> + kurzory.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FORK → IMPORT -->
+  <section id="import">
+    <div class="sec-eyebrow"><span class="n">02</span> Fork → Import</div>
+    <h2>Rozbehni to a nalej dáta</h2>
+    <p>Celý postup od forku po naplnenú databázu. Frontend (tento web) je Phase-1 tenký klient nad API.</p>
+
+    <h3>1 · Fork &amp; inštalácia</h3>
+<pre><code><span class="cmt"># fork cez GitHub UI, potom:</span>
+git clone https://github.com/&lt;ty&gt;/majak.git &amp;&amp; cd majak
+cp .env.example .env            <span class="cmt"># vyplň ANTHROPIC_API_KEY, SUPABASE_*</span>
+make install                    <span class="cmt"># pip install -e ".[dev,ocr]"</span></code></pre>
+
+    <h3>2 · Databáza (Supabase / Postgres + pgvector)</h3>
+<pre><code>supabase start                  <span class="cmt"># lokálny Postgres 15 + pgvector + Storage + Auth</span>
+supabase db reset               <span class="cmt"># aplikuje supabase/migrations/* (7 migrácií, 15 tabuliek)</span></code></pre>
+
+    <h3>3 · Import dát — tri cesty</h3>
+    <table class="matrix">
+      <thead><tr><th>Cesta</th><th>Príkaz</th><th>Kedy</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Verbatim z reportu</b></td>
+          <td><code>python -m majak.seed.import_report report.html --year 2026</code></td>
+          <td>Máš hotový HTML report (<code>const SEED</code>) — nahrá 76 položiek 1:1 do DB, nič sa nestratí.</td>
+        </tr>
+        <tr>
+          <td><b>Cez pipeline zo seedu</b></td>
+          <td><code>python -m majak.seed.from_report report.html</code> → <code>make seed</code></td>
+          <td>Vytiahne prepisy + referencie do <code>seed/raw/</code> a prženie ich reálnou pipeline (LLM/heuristika).</td>
+        </tr>
+        <tr>
+          <td><b>Manuálny vstup</b></td>
+          <td><code>POST /api/inputs</code> (text · súbor · obrázok)</td>
+          <td>Doplnkový vstup za behu — ide tou istou 8-krokovou pipeline.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>Perzistencia:</b> import píše do DB, na ktorú ukazuje <code>DATABASE_URL</code>.
+      Pre trvalé uloženie nastav svoje Supabase. Bez <code>ANTHROPIC_API_KEY</code> beží extrakcia
+      v heuristickom režime (uzemnená, ale hrubšia) — s kľúčom dostaneš kvalitu ako v reporte.</div>
+
+    <h3>4 · Spusti</h3>
+<pre><code>make run       <span class="cmt"># FastAPI na :8000 — /docs pre Swagger</span>
+make check     <span class="cmt"># ruff + mypy + pytest (36 testov)</span></code></pre>
+  </section>
+
+  <!-- ARCHITEKTÚRA -->
+  <section id="architektura">
+    <div class="sec-eyebrow"><span class="n">03</span> Architektúra agenta</div>
+    <h2>Ako to celé zapadá</h2>
+
+    <h3>Pipeline — 8 krokov <span class="pill">ingest/pipeline.py</span></h3>
+    <p>Jeden vstupný bod <code>ingest(raw)</code> pre <b>akýkoľvek</b> vstup:</p>
+    <div class="pipe">
+      <div class="step"><div class="num">01</div><div class="nm">Normalize</div><div class="ds">HTML/docx/pdf/eml/obrázok/ASR → čistý text + segmenty</div></div>
+      <div class="step"><div class="num">02</div><div class="nm">Classify</div><div class="ds">kind, dátum, titul, topic_tags</div></div>
+      <div class="step"><div class="num">03</div><div class="nm">People</div><div class="ds">rozpoznaj vs people+aliasy; neistota → review</div></div>
+      <div class="step"><div class="num">04</div><div class="nm">Extract</div><div class="ds">uzemnené jednotky (citát + lokátor + zdroj)</div></div>
+    </div>
+    <div class="pipe">
+      <div class="step"><div class="num">05</div><div class="nm">Merge</div><div class="ds">carry-over voči otvoreným položkám (bez duplikátov)</div></div>
+      <div class="step"><div class="num">06</div><div class="nm">Review</div><div class="ds">nízka istota → review_queue (neblokujúco)</div></div>
+      <div class="step"><div class="num">07</div><div class="nm">Commit</div><div class="ds">sources, items, grounding, people, events, embeddings</div></div>
+      <div class="step"><div class="num">08</div><div class="nm">Assemble</div><div class="ds">prepočítaj pulz + sekcie dotknutého dňa</div></div>
+    </div>
+
+    <h3>Mapa modulov <span class="pill">src/majak/</span></h3>
+    <div class="card"><div class="tree"><b>src/majak/</b>
+  config.py            <span class="c">nastavenia (env), prahy zhody, modely</span>
+  db.py                <span class="c">async engine/session (SQLAlchemy 2 + asyncpg)</span>
+  <b>models/</b>             <span class="c">ORM tabuľky + Pydantic schémy</span>
+  <b>util/</b>               <span class="c">text (accent-strip, normalize, chunk), čas</span>
+  <b>ingest/</b>             <span class="c">normalize · classify · people · extract · merge · pipeline</span>
+  <b>llm/</b>                <span class="c">client (routing/retry) · prompts/ · embeddings (seam)</span>
+  <b>connectors/</b>         <span class="c">base + gmail · slack · fathom · gcal (delta-sync)</span>
+  <b>day/</b>                <span class="c">assemble (pulz+sekcie) · lifecycle (carry) · dossier</span>
+  <b>scheduler/</b>          <span class="c">jobs (18:00 / 04:00) · notify (stub)</span>
+  <b>api/</b>                <span class="c">FastAPI · auth · routers</span>
+  <b>seed/</b>               <span class="c">run · from_report · import_report</span></div></div>
+
+    <h3>Dátový model <span class="pill">15 tabuliek · pgvector</span></h3>
+    <div class="schema">
+      <div class="tbl"><div class="h"><span>people</span><span class="cnt">+ person_aliases</span></div>
+        <ul>
+          <li><span class="pk">id</span><span class="t">uuid</span></li>
+          <li>canonical_name<span class="t">text</span></li>
+          <li>normalized_name<span class="t">trgm</span></li>
+          <li>role · org · email<span class="t">text</span></li>
+          <li>aliases →<span class="t">confirmed_typo</span></li>
+        </ul></div>
+      <div class="tbl"><div class="h"><span>sources</span><span class="cnt">archív navždy</span></div>
+        <ul>
+          <li><span class="pk">id</span><span class="t">uuid</span></li>
+          <li>kind<span class="t">enum</span></li>
+          <li>raw_text · storage_path<span class="t"></span></li>
+          <li><span class="fk">unique</span><span class="t">connector,ext_id</span></li>
+          <li>+ participants · files<span class="t"></span></li>
+        </ul></div>
+      <div class="tbl"><div class="h"><span>items</span><span class="cnt">jednotky</span></div>
+        <ul>
+          <li><span class="pk">id</span><span class="t">uuid</span></li>
+          <li>entered_day<span class="fk">→ days</span></li>
+          <li>section · rail · status<span class="t">enum</span></li>
+          <li>carry_from<span class="fk">→ items</span></li>
+          <li>status_at · status_day<span class="t"></span></li>
+        </ul></div>
+      <div class="tbl"><div class="h"><span>item_sources</span><span class="cnt">grounding</span></div>
+        <ul>
+          <li><span class="pk">item,source,locator</span></li>
+          <li>quote<span class="t">verbatim</span></li>
+          <li>locator<span class="t">čas/link</span></li>
+          <li>url<span class="t">text</span></li>
+          <li>+ item_people<span class="fk">→ people</span></li>
+        </ul></div>
+      <div class="tbl"><div class="h"><span>days</span><span class="cnt">draft/open/closed</span></div>
+        <ul>
+          <li><span class="pk">date</span><span class="t">date</span></li>
+          <li>status<span class="t">enum</span></li>
+          <li>pulse · summary<span class="t"></span></li>
+          <li>opened_at · closed_at<span class="t"></span></li>
+        </ul></div>
+      <div class="tbl"><div class="h"><span>item_events</span><span class="cnt">audit + učenie</span></div>
+        <ul>
+          <li>type<span class="t">create/edit/…</span></li>
+          <li>before · after<span class="t">jsonb</span></li>
+          <li>reason<span class="t">pri delete</span></li>
+          <li>on_day · at<span class="t"></span></li>
+        </ul></div>
+      <div class="tbl"><div class="h"><span>review_queue</span><span class="cnt">ask-on-suspicion</span></div>
+        <ul>
+          <li>kind<span class="t">enum</span></li>
+          <li>payload<span class="t">kandidáti</span></li>
+          <li>status<span class="t">pending…</span></li>
+        </ul></div>
+      <div class="tbl"><div class="h"><span>vektory + učenie</span><span class="cnt">pgvector</span></div>
+        <ul>
+          <li>source_chunks<span class="t">vector(1024)</span></li>
+          <li>item_embeddings<span class="t">vector(1024)</span></li>
+          <li>sync_state<span class="t">kurzory</span></li>
+          <li>extraction_hints<span class="t">z úprav</span></li>
+        </ul></div>
+    </div>
+
+    <h3>Životný cyklus dňa &amp; carry-over <span class="pill">day/lifecycle.py</span></h3>
+    <p><code>entered_day</code> = deň, kedy položka pribudla na tabuľu. Prenesenie vytvorí <b>nový riadok</b>
+      s <code>carry_from</code> na predchádzajúci; koreň reťaze drží skutočný prvý deň. Prechádzaním
+      <code>carry_from</code> vieš vystopovať celý reťazec: <span class="pill">vstúpila 9.7. → prenesená → hotová 11.7. 14:32</span>.
+      „Všetko aktuálne" = otvorené <b>listové</b> položky (bez novšieho prenesenia).</p>
+
+    <h3>Konektory <span class="pill">connectors/</span></h3>
+    <p>Rozhranie <code>fetch_since(cursor) → (items, new_cursor)</code>. Idempotenciu garantuje
+      <code>sources.unique(connector, external_id)</code>, kurzor len ohraničí okno. v1: Gmail · Slack ·
+      Fathom · Google Calendar (čisté seamy — bez kľúčov sú no-op).</p>
+
+    <h3>Agent / LLM vrstva <span class="pill">llm/</span></h3>
+    <table class="matrix">
+      <thead><tr><th>Prvok</th><th>Kde</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Routing modelov</td><td><code>llm/client.py</code></td><td><code>extract</code> = sonnet, <code>synth</code> = opus, <code>vision</code>. Mená v configu.</td></tr>
+        <tr><td>Prompty (verzované)</td><td><code>llm/prompts/</code></td><td>classify · extract · pulse · dossier · vision — bump verzie pri zmene.</td></tr>
+        <tr><td>Offline fallback</td><td>classify/extract</td><td>Bez API kľúča deterministická heuristika — vždy uzemnená.</td></tr>
+        <tr><td>Prahy zhody osôb</td><td><code>config.py</code></td><td>≥ <code>0.92</code> link · <code>0.75–0.92</code> review · nižšie = nová osoba.</td></tr>
+        <tr><td>Carry-over prah</td><td><code>ingest/merge.py</code></td><td><code>0.86</code> (lexikálne + embedding).</td></tr>
+        <tr><td>Embeddings</td><td><code>llm/embeddings.py</code></td><td>Seam pre 1024-dim provider (napr. Voyage). Offline preskočené.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- KDE VYLEPŠOVAŤ -->
+  <section id="vylepsovat">
+    <div class="sec-eyebrow"><span class="n">04</span> Kde vylepšovať</div>
+    <h2>Rozširovacie body</h2>
+    <p>Čisté seamy, kde vieš zasiahnuť bez búrania zvyšku:</p>
+    <div class="grid g3">
+      <div class="card"><h3>Nový konektor</h3><p style="font-size:13.5px;margin:0;color:var(--ink-soft)">Implementuj <code>fetch_since</code> v <code>connectors/</code> a zaregistruj. Pipeline je rovnaká.</p></div>
+      <div class="card"><h3>Kvalita extrakcie</h3><p style="font-size:13.5px;margin:0;color:var(--ink-soft)">Uprav <code>prompts/extract.py</code> (bump verzie) alebo <code>extraction_hints</code> z tvojich úprav.</p></div>
+      <div class="card"><h3>Zapoj embeddings</h3><p style="font-size:13.5px;margin:0;color:var(--ink-soft)">Naplň <code>llm/embeddings.py</code> → sémantický carry-over a dedup ožijú.</p></div>
+      <div class="card"><h3>Ladenie prahov</h3><p style="font-size:13.5px;margin:0;color:var(--ink-soft)">Zmeň <code>PERSON_MATCH_*</code> / <code>CARRY_THRESHOLD</code> v configu podľa dát.</p></div>
+      <div class="card"><h3>Notifikácie</h3><p style="font-size:13.5px;margin:0;color:var(--ink-soft)">Doplň kanál v <code>scheduler/notify.py</code> (email/Slack/push).</p></div>
+      <div class="card"><h3>Frontend na API</h3><p style="font-size:13.5px;margin:0;color:var(--ink-soft)">Nahraď <code>SEED</code> v reporte za <code>fetch('/api/days/current')</code> cez <code>frontend/api.js</code>.</p></div>
+    </div>
+    <div class="callout warn" style="margin-top:18px"><b>Neskôr (seamy pripravené):</b> Jira konektor ·
+      auto-ladenie extrakcie z <code>extraction_hints</code> · plné web UI · mobilný push · hlasový vstup.</div>
+  </section>
+
+  <footer>
+    <div class="foot-links">
+      <a href="./report.html">Report 10.7.</a>
+      <a href="https://github.com/pavolturcina-ai/majak" target="_blank" rel="noopener">Repo</a>
+      <a href="https://github.com/pavolturcina-ai/majak/blob/claude/new-session-w0amso/README.md" target="_blank" rel="noopener">README</a>
+      <a href="https://github.com/pavolturcina-ai/majak/tree/claude/new-session-w0amso/supabase/migrations" target="_blank" rel="noopener">Migrácie</a>
+      <a href="https://github.com/pavolturcina-ai/majak/blob/claude/new-session-w0amso/src/majak/ingest/pipeline.py" target="_blank" rel="noopener">pipeline.py</a>
+    </div>
+    <div>MAJÁK — osobný CEO asistent pre GOSPACE LABS s.r.o. · kód EN, UI SK · TZ Europe/Bratislava.</div>
+  </footer>
+</div>
+
+<script>
+  // Zvýrazni aktívnu sekciu v navigácii pri scrollovaní.
+  const links = [...document.querySelectorAll('.nav a[href^="#"]')];
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting) {
+      links.forEach(l => l.style.background = '');
+      const a = map.get(e.target.id);
+      if (a) { a.style.background = 'var(--signal-tint)'; a.style.color = 'var(--signal-deep)'; }
+    }});
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
