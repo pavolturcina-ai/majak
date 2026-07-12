@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     gmail_client_id: str = ""
     gmail_client_secret: str = ""
     gmail_refresh_token: str = ""
+    # Extra Gmail search filter (same operators as the Gmail box), e.g.
+    # "is:starred", "in:inbox is:unread", "is:important". Empty = all mail.
+    gmail_query: str = ""
     slack_bot_token: str = ""
     slack_user_token: str = ""
     slack_app_token: str = ""

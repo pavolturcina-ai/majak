@@ -32,6 +32,8 @@ envVarGroups:
         sync: false
       - key: GMAIL_REFRESH_TOKEN
         sync: false
+      - key: GMAIL_QUERY            # optional filter, e.g. "is:starred" (empty = all mail)
+        sync: false
       - key: SLACK_BOT_TOKEN
         sync: false
       - key: FATHOM_API_KEY

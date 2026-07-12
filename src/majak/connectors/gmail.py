@@ -39,8 +39,11 @@ class GmailConnector:
         )
         headers = {"Authorization": f"Bearer {token}"}
         # cursor = epoch seconds of the newest message seen; first run = last 1 day.
-        query = f"after:{cursor}" if cursor else "newer_than:1d"
-        query += " -in:chats -in:spam -in:trash"
+        parts = [f"after:{cursor}" if cursor else "newer_than:1d", "-in:chats -in:spam -in:trash"]
+        # Optional operator filter (e.g. "is:starred", "in:inbox is:unread").
+        if settings.gmail_query.strip():
+            parts.append(settings.gmail_query.strip())
+        query = " ".join(parts)
 
         raws: list[RawInput] = []
         newest = int(cursor) if cursor else 0
