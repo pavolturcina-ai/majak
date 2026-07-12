@@ -1,7 +1,8 @@
 """Fathom connector — meeting recordings + transcripts.
 
-Cursor = ISO timestamp of the most recent recording ingested. Overlap is
-harmless (dedupe on external_id).
+Cursor = ISO timestamp of the most recent recording ingested. Only the current
+day is pulled: the first run floors at the start of today (local tz); later runs
+advance via the cursor. Overlap is harmless (dedupe on external_id).
 
 NOTE: Fathom's public API is versioned and its exact paths/auth may change.
 The endpoint + auth-header constants below are isolated so they are trivial to
@@ -18,6 +19,7 @@ import httpx
 
 from majak.config import settings
 from majak.models.schemas import RawInput
+from majak.util.time import now_local
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +48,9 @@ class FathomConnector:
             return [], cursor
 
         headers = self._headers()
-        params: dict[str, str] = {"limit": "25"}
-        if cursor:
-            params["created_after"] = cursor
+        # Current day only: floor at start of today (local); later runs use cursor.
+        day_start = now_local().replace(hour=0, minute=0, second=0, microsecond=0)
+        params: dict[str, str] = {"limit": "25", "created_after": cursor or day_start.isoformat()}
 
         raws: list[RawInput] = []
         newest = cursor
