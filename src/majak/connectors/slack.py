@@ -5,8 +5,10 @@ the user's DMs, group DMs (mpim), and private channels the user belongs to.
 Falls back to the bot token (``SLACK_BOT_TOKEN``) for public/private channels the
 bot was invited to. Captures top-level messages *and* thread replies.
 
-Cursor = the newest message ``ts`` seen across watched conversations. Overlap is
-harmless — ingestion dedupes on (connector, external_id = "<channel>:<ts>").
+Only the current day is pulled: the first run floors the fetch window at the
+start of today (local tz); later runs advance via the cursor (newest ts seen),
+so each run fetches only what is new since the last run. Overlap is harmless —
+ingestion dedupes on (connector, external_id = "<channel>:<ts>").
 """
 
 from __future__ import annotations
@@ -18,6 +20,7 @@ import httpx
 
 from majak.config import settings
 from majak.models.schemas import RawInput
+from majak.util.time import now_local
 
 logger = logging.getLogger(__name__)
 
@@ -45,9 +48,16 @@ class SlackConnector:
             return [], cursor
 
         headers = {"Authorization": f"Bearer {self._token}"}
-        oldest = cursor or "0"
+        # Current-day only: floor at start of today (local); never a full backfill.
+        # A cursor newer than that (same-day re-run) narrows the window further.
+        day_start = now_local().replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        try:
+            start = max(day_start, float(cursor)) if cursor else day_start
+        except (TypeError, ValueError):
+            start = day_start
+        oldest = repr(start)
         raws: list[RawInput] = []
-        newest = float(oldest)
+        newest = start
 
         async with httpx.AsyncClient(timeout=30, base_url=_BASE, headers=headers) as client:
             conversations = await self._conversations(client)
