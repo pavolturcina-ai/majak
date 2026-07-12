@@ -1,0 +1,40 @@
+# Supabase local development configuration for MAJÁK.
+# See https://supabase.com/docs/guides/cli/config
+
+project_id = "majak"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[db.pooler]
+enabled = false
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[storage.buckets.majak-sources]
+public = false
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:8000"
+jwt_expiry = 3600
+enable_signup = false
+
+# pg_cron / pg_net for scheduled jobs (18:00 close, 04:00 fill).
+[experimental]

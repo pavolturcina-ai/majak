@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAJÁK — Import (manuálny vstup)</title>
+<meta name="description" content="Pridaj manuálny vstup (text, súbor, obrázok) do dňa — prejde tou istou pipeline ako plánované vstupy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f8f6;--card:#ffffff;--card-2:#fbfcfa;--ink:#151a1d;--ink-soft:#4a555b;--ink-faint:#8b969b;
+    --line:#e5e8e4;--line-soft:#eef1ee;--signal:#0e6b7a;--signal-tint:#e6f1f2;--signal-deep:#0a4f5a;
+    --win:#1f8a54;--warn:#b26a00;--warn-tint:#f8eeda;--threat:#c0392b;--carry:#8a6d1f;--carry-tint:#faf3dd;
+    --radius:14px;--shadow:0 1px 2px rgba(20,26,29,.04),0 6px 22px rgba(20,26,29,.05);
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --disp:"Space Grotesk",var(--sans);--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --paper:#0f1413;--card:#161d1c;--card-2:#131a19;--ink:#e7ece9;--ink-soft:#9aa6a1;--ink-faint:#6c7a74;
+    --line:#27302d;--line-soft:#1e2624;--signal:#3fa9bb;--signal-tint:#123030;--signal-deep:#5cc0d0;
+    --win:#48b57a;--warn:#d29a3e;--warn-tint:#2a2413;--threat:#e0685c;--carry:#c9a94e;--carry-tint:#2a2413;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32);}}
+  :root[data-theme="dark"]{
+    --paper:#0f1413;--card:#161d1c;--card-2:#131a19;--ink:#e7ece9;--ink-soft:#9aa6a1;--ink-faint:#6c7a74;
+    --line:#27302d;--line-soft:#1e2624;--signal:#3fa9bb;--signal-tint:#123030;--signal-deep:#5cc0d0;
+    --win:#48b57a;--warn:#d29a3e;--warn-tint:#2a2413;--threat:#e0685c;--carry:#c9a94e;--carry-tint:#2a2413;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.32);}
+  :root[data-theme="light"]{
+    --paper:#f7f8f6;--card:#fff;--card-2:#fbfcfa;--ink:#151a1d;--ink-soft:#4a555b;--ink-faint:#8b969b;
+    --line:#e5e8e4;--line-soft:#eef1ee;--signal:#0e6b7a;--signal-tint:#e6f1f2;--signal-deep:#0a4f5a;
+    --win:#1f8a54;--warn:#b26a00;--warn-tint:#f8eeda;--threat:#c0392b;--carry:#8a6d1f;--carry-tint:#faf3dd;
+    --shadow:0 1px 2px rgba(20,26,29,.04),0 6px 22px rgba(20,26,29,.05);}
+  *{box-sizing:border-box}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased;padding-bottom:60px}
+
+  .top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .top .in{max-width:820px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:14px}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+  .beacon{width:26px;height:26px;border-radius:7px;flex:none;border:1px solid var(--line);position:relative;overflow:hidden;
+    background:radial-gradient(circle at 50% 32%,var(--signal) 0 26%,transparent 27%),
+    conic-gradient(from -34deg at 50% 36%,transparent 0 61%,color-mix(in srgb,var(--signal) 34%,transparent) 61% 75%,transparent 75%),var(--card)}
+  .logo b{font-family:var(--disp);font-weight:700;letter-spacing:.16em;font-size:15px}
+  .nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+  .nav a{font-size:13px;color:var(--ink-soft);text-decoration:none;padding:6px 11px;border-radius:8px}
+  .nav a:hover{background:var(--signal-tint);color:var(--signal-deep)}
+  .nav a.active{background:var(--signal);color:#fff}
+
+  .wrap{max-width:820px;margin:0 auto;padding:0 22px}
+  header.hd{padding:40px 0 20px;border-bottom:1px solid var(--line-soft)}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);font-weight:500;margin-bottom:11px}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(26px,4vw,34px);letter-spacing:-.02em;margin:0 0 12px}
+  .lead{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0}
+  .lead b{color:var(--ink)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin:22px 0}
+  .card h2{font-family:var(--disp);font-size:16px;margin:0 0 14px;font-weight:600}
+  label.fld{display:block;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:0 0 6px}
+  .row{margin-bottom:18px}
+
+  input[type=text],input[type=date],input[type=url],textarea,input[type=password]{
+    width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--card-2);border:1px solid var(--line);
+    border-radius:9px;padding:10px 12px}
+  textarea{min-height:150px;resize:vertical;line-height:1.55}
+  input:focus,textarea:focus{outline:none;border-color:var(--signal);background:var(--card)}
+  input[type=file]{font:inherit;font-size:13.5px;color:var(--ink-soft)}
+
+  .dayrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .dayrow input[type=date]{width:auto;flex:0 0 auto}
+  .chip{font:inherit;font-size:12.5px;cursor:pointer;border:1px solid var(--line);background:var(--card-2);color:var(--ink-soft);border-radius:20px;padding:6px 12px}
+  .chip:hover{border-color:var(--signal);color:var(--signal-deep)}
+  .chip.on{background:var(--signal);color:#fff;border-color:var(--signal)}
+
+  .tabs{display:flex;gap:4px;background:var(--card-2);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:16px;width:fit-content}
+  .tab{font:inherit;font-size:13.5px;cursor:pointer;border:0;background:transparent;color:var(--ink-soft);border-radius:7px;padding:7px 15px}
+  .tab.on{background:var(--signal);color:#fff}
+  .panel{display:none}
+  .panel.on{display:block}
+  .hint{font-size:12.5px;color:var(--ink-faint);margin-top:6px}
+  #imgPrev{max-width:100%;max-height:220px;border-radius:9px;border:1px solid var(--line);margin-top:10px;display:none}
+
+  .btn{font:inherit;font-size:14px;font-weight:500;cursor:pointer;border-radius:9px;padding:10px 18px;border:1px solid var(--signal);background:var(--signal);color:#fff;display:inline-flex;align-items:center;gap:8px}
+  .btn:hover{background:var(--signal-deep);border-color:var(--signal-deep)}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .btn.ghost:hover{background:var(--card-2);color:var(--ink);border-color:var(--signal)}
+  .btn.sm{font-size:12.5px;padding:6px 12px}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px}
+
+  details.settings{margin-top:4px}
+  details.settings summary{cursor:pointer;font-size:13px;color:var(--ink-soft);font-family:var(--mono)}
+  details.settings .body{margin-top:12px;display:grid;gap:12px;grid-template-columns:1fr 1fr}
+  @media(max-width:620px){details.settings .body{grid-template-columns:1fr}}
+
+  .status{border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px;display:none}
+  .status.show{display:block}
+  .status.ok{background:var(--signal-tint);border:1px solid color-mix(in srgb,var(--signal) 30%,var(--line));color:var(--signal-deep)}
+  .status.queued{background:var(--warn-tint);border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));color:var(--warn)}
+  .status.err{background:color-mix(in srgb,var(--threat) 12%,var(--card));border:1px solid color-mix(in srgb,var(--threat) 35%,var(--line));color:var(--threat)}
+  .status code{font-family:var(--mono);font-size:12px}
+
+  .queue{list-style:none;margin:12px 0 0;padding:0}
+  .queue li{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line-soft);font-size:13.5px}
+  .queue li:last-child{border-bottom:0}
+  .queue .kind{font-family:var(--mono);font-size:11px;background:var(--signal-tint);color:var(--signal-deep);border-radius:5px;padding:1px 7px}
+  .queue .day{font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
+  .queue .t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .queue .rm{cursor:pointer;color:var(--ink-faint);border:0;background:transparent;font-size:15px}
+  .queue .rm:hover{color:var(--threat)}
+  .muted{color:var(--ink-faint);font-size:13.5px}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:5px}
+</style>
+<script src="./auth.js"></script>
+</head>
+<body>
+<div class="top">
+  <div class="in">
+    <a class="logo" href="./index.html"><span class="beacon" aria-hidden="true"></span><b>MAJÁK</b></a>
+    <nav class="nav">
+      <a href="./index.html">Hub</a>
+      <a href="./report.html">Report</a>
+      <a href="./import.html" class="active" aria-current="page">Import</a>
+      <a href="./zoznam.html">Zoznam</a>
+      <a href="./osoby.html">Osoby</a>
+      <a href="./otazky.html">Otázky</a>
+      <a href="./behy.html">Behy</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="hd">
+    <div class="eyebrow">Manuálny vstup</div>
+    <h1>Pridať vstup do dňa</h1>
+    <p class="lead">Text, súbor alebo obrázok — prejde <b>rovnakou 8-krokovou pipeline</b> ako plánované
+      vstupy a priradí sa do zvoleného <b>dňa</b> (default: najbližší pracovný deň). Ak API nebeží,
+      vstup sa <b>uloží do fronty</b> a odošle sa neskôr — nič sa nestratí.</p>
+  </header>
+
+  <!-- FORM -->
+  <form class="card" id="form">
+    <h2>Nový vstup</h2>
+
+    <div class="row">
+      <label class="fld" for="day">Deň</label>
+      <div class="dayrow">
+        <input type="date" id="day" name="day">
+        <button type="button" class="chip" data-day="today">Dnes</button>
+        <button type="button" class="chip on" data-day="work">Najbližší pracovný deň</button>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab on" data-tab="text" role="tab">Text</button>
+      <button type="button" class="tab" data-tab="file" role="tab">Súbor</button>
+      <button type="button" class="tab" data-tab="image" role="tab">Obrázok</button>
+    </div>
+
+    <div class="panel on" id="p-text">
+      <div class="row">
+        <label class="fld" for="title">Titul (voliteľné)</label>
+        <input type="text" id="title" name="title" placeholder="napr. Poznámka z telefonátu s Antonom">
+      </div>
+      <div class="row">
+        <label class="fld" for="text">Text</label>
+        <textarea id="text" name="text" placeholder="Vlož poznámku, prepis, e-mail, čokoľvek…"></textarea>
+      </div>
+    </div>
+
+    <div class="panel" id="p-file">
+      <div class="row">
+        <label class="fld" for="file">Súbor (docx · pdf · eml · html · txt)</label>
+        <input type="file" id="file" name="file" accept=".docx,.pdf,.eml,.html,.htm,.txt,.md">
+        <div class="hint">Veľké súbory sa dajú spracovať len keď je API dostupné (nie z fronty).</div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-image">
+      <div class="row">
+        <label class="fld" for="image">Obrázok (screenshot, foto tabule…)</label>
+        <input type="file" id="image" name="image" accept="image/*">
+        <img id="imgPrev" alt="Náhľad">
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button type="submit" class="btn" id="submit">Spracovať cez pipeline</button>
+      <span class="muted" id="mode"></span>
+    </div>
+
+    <div class="status" id="status"></div>
+  </form>
+
+  <!-- SETTINGS -->
+  <div class="card">
+    <details class="settings">
+      <summary>Nastavenie API (kam sa vstupy posielajú)</summary>
+      <div class="body">
+        <div>
+          <label class="fld" for="apiBase">API base URL</label>
+          <input type="url" id="apiBase" placeholder="https://tvoje-api… /api  ·  prázdne = len fronta">
+        </div>
+        <div>
+          <label class="fld" for="token">Token (Bearer)</label>
+          <input type="password" id="token" placeholder="dev-cron-secret alebo JWT">
+        </div>
+      </div>
+      <div class="btnrow"><button type="button" class="btn ghost sm" id="saveApi">Uložiť</button>
+        <span class="hint">Pozn.: hostovaná <code>https</code> stránka nevie volať <code>http://localhost</code> (mixed-content). Buď spusti stránku lokálne pri API, alebo nasaď API cez https.</span></div>
+    </details>
+  </div>
+
+  <!-- QUEUE -->
+  <div class="card">
+    <h2>Fronta neodoslaných vstupov (<span id="qcount">0</span>)</h2>
+    <p class="muted" id="qempty">Zatiaľ nič vo fronte.</p>
+    <ul class="queue" id="queue"></ul>
+    <div class="btnrow" id="qactions" style="display:none">
+      <button type="button" class="btn sm" id="flush">Odoslať frontu do API</button>
+      <button type="button" class="btn ghost sm" id="download">Stiahnuť ako .json</button>
+      <button type="button" class="btn ghost sm" id="clear">Vymazať frontu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var LS_API="majak.apiBase", LS_TOK="majak.token", LS_Q="majak.inputQueue";
+  // Live API by default (override in "Nastavenie API"). Not a secret.
+  var DEFAULT_API="https://majak-api.onrender.com/api";
+  var $=function(s){return document.querySelector(s)};
+
+  // ---- deň: default najbližší pracovný deň ----
+  function iso(d){return d.toISOString().slice(0,10)}
+  function today(){return new Date()}
+  function nearestWorkday(){var d=today();var g=d.getDay();if(g===6)d.setDate(d.getDate()+2);else if(g===0)d.setDate(d.getDate()+1);return d}
+  function setDay(which){
+    var d=which==="today"?today():nearestWorkday();
+    $("#day").value=iso(d);
+    document.querySelectorAll(".chip").forEach(function(c){c.classList.toggle("on",c.dataset.day===which)});
+  }
+  setDay("work");
+  document.querySelectorAll(".chip").forEach(function(c){c.onclick=function(){setDay(c.dataset.day)}});
+  $("#day").addEventListener("input",function(){document.querySelectorAll(".chip").forEach(function(c){c.classList.remove("on")})});
+
+  // ---- taby ----
+  document.querySelectorAll(".tab").forEach(function(t){t.onclick=function(){
+    document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("on")});
+    document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("on")});
+    t.classList.add("on"); $("#p-"+t.dataset.tab).classList.add("on"); currentTab=t.dataset.tab;
+  }});
+  var currentTab="text";
+
+  // ---- image preview ----
+  $("#image").addEventListener("change",function(e){
+    var f=e.target.files[0], img=$("#imgPrev");
+    if(!f){img.style.display="none";return}
+    var r=new FileReader(); r.onload=function(){img.src=r.result;img.style.display="block"}; r.readAsDataURL(f);
+  });
+
+  // ---- API settings ----
+  function apiBase(){return (localStorage.getItem(LS_API)||DEFAULT_API).replace(/\/$/,"")}
+  function token(){return localStorage.getItem(LS_TOK)||""}
+  $("#apiBase").value=localStorage.getItem(LS_API)||DEFAULT_API;
+  $("#token").value=token();
+  $("#saveApi").onclick=function(){
+    localStorage.setItem(LS_API,$("#apiBase").value.trim());
+    localStorage.setItem(LS_TOK,$("#token").value.trim());
+    refreshMode(); flash("ok","Nastavenie uložené.");
+  };
+  function refreshMode(){$("#mode").textContent=apiBase()?("→ "+apiBase()+"/inputs"):"→ režim fronty (API nenastavené)"}
+  refreshMode();
+
+  // ---- queue ----
+  function loadQ(){try{return JSON.parse(localStorage.getItem(LS_Q)||"[]")}catch(e){return[]}}
+  function saveQ(q){localStorage.setItem(LS_Q,JSON.stringify(q))}
+  function renderQ(){
+    var q=loadQ(); $("#qcount").textContent=q.length;
+    $("#qempty").style.display=q.length?"none":"block";
+    $("#qactions").style.display=q.length?"flex":"none";
+    var ul=$("#queue"); ul.innerHTML="";
+    q.forEach(function(it,i){
+      var li=document.createElement("li");
+      li.innerHTML='<span class="kind">'+it.kind+'</span><span class="day">'+it.day+'</span>'+
+        '<span class="t"></span><button class="rm" title="Odstrániť">×</button>';
+      li.querySelector(".t").textContent=it.title||it.fileName||(it.text?it.text.slice(0,60):"");
+      li.querySelector(".rm").onclick=function(){var a=loadQ();a.splice(i,1);saveQ(a);renderQ()};
+      ul.appendChild(li);
+    });
+  }
+  function enqueue(entry){var q=loadQ();q.push(entry);saveQ(q);renderQ()}
+  renderQ();
+
+  function flash(kind,msg,mono){
+    var s=$("#status"); s.className="status show "+kind;
+    s.innerHTML=msg+(mono?' <code>'+mono+'</code>':'');
+  }
+
+  // ---- read file as dataURL for the queue ----
+  function readData(f){return new Promise(function(res){var r=new FileReader();r.onload=function(){res(r.result)};r.readAsDataURL(f)})}
+  function dataURLtoBlob(u){var a=u.split(",");var m=a[0].match(/:(.*?);/)[1];var b=atob(a[1]);var n=b.length;var arr=new Uint8Array(n);while(n--)arr[n]=b.charCodeAt(n);return new Blob([arr],{type:m})}
+
+  // ---- POST to API ----
+  function postToApi(entry){
+    var fd=new FormData();
+    fd.append("day",entry.day);
+    if(entry.title)fd.append("title",entry.title);
+    if(entry.kind==="text")fd.append("text",entry.text);
+    else if(entry.kind==="image")fd.append("image",dataURLtoBlob(entry.data),entry.fileName||"image.png");
+    else fd.append("file",dataURLtoBlob(entry.data),entry.fileName||"file");
+    return fetch(apiBase()+"/inputs",{method:"POST",headers:{Authorization:"Bearer "+token()},body:fd})
+      .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()});
+  }
+
+  // ---- submit ----
+  $("#form").addEventListener("submit",function(e){
+    e.preventDefault();
+    var day=$("#day").value||iso(nearestWorkday());
+    var title=$("#title").value.trim();
+    var p;
+    if(currentTab==="text"){
+      var text=$("#text").value.trim();
+      if(!text){flash("err","Zadaj text.");return}
+      p=Promise.resolve({kind:"text",day:day,title:title,text:text,ts:Date.now()});
+    } else {
+      var input=currentTab==="image"?$("#image"):$("#file");
+      var f=input.files[0];
+      if(!f){flash("err","Vyber "+(currentTab==="image"?"obrázok":"súbor")+".");return}
+      p=readData(f).then(function(u){return {kind:currentTab,day:day,title:title,fileName:f.name,data:u,ts:Date.now()}});
+    }
+    p.then(function(entry){
+      if(apiBase()){
+        flash("ok","Posielam…");
+        postToApi(entry).then(function(res){
+          var n=(res.created_item_ids||[]).length, r=(res.review_ids||[]).length;
+          flash("ok","Hotovo — vytvorených položiek: <b>"+n+"</b>"+(r?(", na review: "+r):"")+" · deň "+day+".");
+          resetForm();
+        }).catch(function(err){
+          enqueue(entry);
+          flash("queued","API nedostupné ("+err.message+") — vstup <b>uložený do fronty</b> pre deň "+day+".");
+          resetForm();
+        });
+      } else {
+        enqueue(entry);
+        flash("queued","Uložené do <b>fronty</b> pre deň "+day+" (API nie je nastavené).");
+        resetForm();
+      }
+    });
+  });
+  function resetForm(){$("#text").value="";$("#title").value="";$("#file").value="";$("#image").value="";$("#imgPrev").style.display="none"}
+
+  // ---- queue actions ----
+  $("#flush").onclick=function(){
+    if(!apiBase()){flash("err","Najprv nastav API base URL.");return}
+    var q=loadQ(); if(!q.length)return;
+    flash("ok","Odosielam frontu ("+q.length+")…");
+    (function next(i,remain){
+      if(i>=q.length){saveQ(remain);renderQ();flash(remain.length?"queued":"ok",remain.length?("Zostáva vo fronte: "+remain.length):"Fronta odoslaná.");return}
+      postToApi(q[i]).then(function(){next(i+1,remain)}).catch(function(){remain.push(q[i]);next(i+1,remain)});
+    })(0,[]);
+  };
+  $("#download").onclick=function(){
+    var blob=new Blob([JSON.stringify(loadQ(),null,2)],{type:"application/json"});
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="majak-inputs.json";a.click();
+  };
+  $("#clear").onclick=function(){if(confirm("Vymazať celú frontu?")){saveQ([]);renderQ()}};
+
+  // Odošli frontu automaticky keď sa vráti pripojenie a API je nastavené.
+  window.addEventListener("online",function(){if(apiBase()&&loadQ().length)$("#flush").click()});
+})();
+</script>
+</body>
+</html>
